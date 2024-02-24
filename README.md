@@ -1,8 +1,7 @@
-# Insanity Remastered
+# Insanity Remastered (WIP, currently fixing the decompiled code errors)
 
-# Insanity Remastered is being discontinued soon. View the annoucement [here](https://github.com/BudgetAirpods/InsanityRemastered/discussions/40)
+# This may be my one and only update. We'll see. I just wanted to fix the audio assets not loading, but I ended up doing a bit more.
 
-## This mod is best experienced with smaller lobbies. (4-6) players.
 A mod for Lethal Company that adds more features to the insanity mechanic and tweaks a few things related to it.
 
 This is a client-sided mod as it would be odd if other players could see your hallucinations.
@@ -17,15 +16,13 @@ Drag InsanityRemastered.dll and the folder named "InsanityRemastered" into the B
    - Panic attacks will cause the most sanity loss.
 
 ### Gaining Sanity:
-   - Flashlights will reduce the sanity drain amount when turned on, making them really useful in this mod.
-   - Being around players will allow your sanity to regen when inside the facility. Better buddy up!
-   - Consuming pills will reset your insanity level entirely.
-   - Being near an active light source (EXCLUDING FLASHLIGHTS) will regen sanity.
+   - Being near an active light source or using flashlights will regenerate sanity.
+   - Being around players will drastically reduce your sanity loss.
+   - Consuming pills will reset your sanity level entirely.
 
 ## Insanity Scaling:
-   - Sanity loss and gain will scale with how many players are in your lobby.
-   - To prevent lobbies of 10+ being completely miserable, there is a cap to how many players the scaling will take into account, with the default being 5. This can be changed in the configuration file.
-   - Solo players can change a multiplier that affects their sanity gain as well.
+   - Sanity loss will scale with how many players are in your lobby.
+   - Solo players can change a multiplier that affects their sanity loss as well.
      
 **There are now three levels of insanity. High, Medium, and Low.**
    - As your insanity level progresses, you will experience more intense hallucinations.
@@ -41,14 +38,13 @@ In addition to the current sounds that play when inside the facility, this mod a
 
 There's also a chance certain vanilla sound effects will play to make the sounds more believable.
 
-### Light Shutoff:
+### Lights Off:
 
 While inside the facility, the lights have a chance to go out for you and you only.
 
 They will power back on their own eventually, but you can step outside and re-enter the facility to force them on.
 
-
-### Fake player:
+### Fake Players:
 
 While exploring the facilities, you have a chance of running into a hallucination of a player.
 
@@ -69,30 +65,26 @@ It will despawn if it is not picked up within a few seconds of spawning.
 At the highest level of insanity, you will slowly experience a panic attack.
 
 During one, some hallucinations become lethal and you experience one of the following symptoms:
-- Slowness.
-- Cloudy Vision.
-- Death.
+- Slowness
+- Cloudy Vision
+- Death
 
-Panic attacks can be helped by stepping outside the facility for a while, or being around players and lights.
+Panic attacks can be helped by returning to the ship for awhile, or being around players and lights.
 
 ## Configuration:
 
-A lot of things in this mod are tweakable.
-
-Don't like the fake player? You can disable them in the config.
-
-Keep in mind that some settings might be removed due to me feeling like they shouldn't be changed.
-
-In my eyes, if you conform to everyone, you conform to no one.
+A lot of things in this mod are tweakable. It's recommended to keep the values as they are, or scale them equally, since the code may not 
 
 ## Suggestions and Bug Reports:
-
-**This mod is far from being done.**
 
 If you have any suggestions please leave them on them in the Discussions tab on the GitHub.
 
 Bug reports/compatibility issues should be reported in the Issues tab.
 
-https://github.com/BudgetAirpods/InsanityRemastered/tree/main
+## Known Issues:
 
-View the trello board to see what I'm working on currently: https://trello.com/b/trtanZtI/insanity-remastered
+The Lights Off feature may cause the lights to turn on again after you take the apparatus.
+
+The Skinwalkers mod is not supported in my fork. I left the code, but it is disabled by default and will not be maintained as of now. I prefer Mirage anyway, but I don't know how to do most of the compatibility code.
+
+This was made from decompiled code and by a newbie programmer.
