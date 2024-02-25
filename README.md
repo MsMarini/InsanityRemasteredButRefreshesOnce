@@ -83,8 +83,8 @@ Bug reports/compatibility issues should be reported in the Issues tab.
 
 ## Known Issues:
 
-The Lights Off feature may cause the lights to turn on again after you take the apparatus.
+-The Lights Off feature may cause the lights to turn on again after you take the apparatus.
 
-The Skinwalkers mod is not supported in my fork. I left the code, but it is disabled by default and will not be maintained as of now. I prefer Mirage anyway, but I don't know how to do most of the compatibility code.
+-The Skinwalkers mod is not supported in my fork. I left the code, but it is disabled by default and will not be maintained as of now. I prefer Mirage anyway, but I don't know how to do most of the compatibility code.
 
-This was made from decompiled code and by a newbie programmer.
+-This was made from decompiled code and by a newbie programmer.

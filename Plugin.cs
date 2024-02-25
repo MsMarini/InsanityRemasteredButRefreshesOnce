@@ -38,22 +38,6 @@ using UnityEngine.AI;
 using UnityEngine.PlayerLoop;
 using UnityEngine.SceneManagement;
 
-[assembly: CompilationRelaxations(8)]
-[assembly: RuntimeCompatibility(WrapNonExceptionThrows = true)]
-[assembly: Debuggable(DebuggableAttribute.DebuggingModes.Default | DebuggableAttribute.DebuggingModes.DisableOptimizations | DebuggableAttribute.DebuggingModes.IgnoreSymbolStoreSequencePoints | DebuggableAttribute.DebuggingModes.EnableEditAndContinue)]
-[assembly: AssemblyTitle("SanityRewrittenMod")]
-[assembly: AssemblyDescription("")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SanityRewrittenMod")]
-[assembly: AssemblyCopyright("Copyright ©  2023")]
-[assembly: AssemblyTrademark("")]
-[assembly: ComVisible(false)]
-[assembly: Guid("023dcefc-0d1e-49d8-8d40-c74bd054370b")]
-[assembly: AssemblyFileVersion("1.0.0.0")]
-[assembly: TargetFramework(".NETFramework,Version=v4.8", FrameworkDisplayName = ".NET Framework 4.8")]
-[assembly: AssemblyVersion("1.0.0.0")]
-
 public enum EnumInsanity
 {
     Low,
@@ -66,92 +50,6 @@ public enum SceneNames
     InitSceneLaunchOptions,
     MainMenu,
     SampleSceneRelay
-}
-namespace InsanityRemastered
-{
-    [BepInPlugin("Epicool.InsanityRemastered", "Insanity Remastered", "1.1.3")]
-    public class InsanityRemasteredBase : BaseUnityPlugin
-    {
-        public static InsanityRemasteredBase Instance;
-
-        public const string modGUID = "Epicool.InsanityRemastered";
-        public const string modName = "Insanity Remastered";
-        public const string modVersion = "1.1.3";
-
-        private readonly Harmony harmony = new(modGUID);
-
-        internal static GameObject SanityModObject;
-
-        private void Awake()
-        {
-            if (Instance == null)
-            {
-                Instance = this;
-            }
-
-            SceneManager.sceneLoaded += OnSceneLoaded;
-            AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
-
-            InsanityRemasteredLogger.Initialize(modGUID);
-            InsanityRemasteredConfiguration.Initialize(Config);
-            InsanityRemasteredConfiguration.ValidateSettings();
-            InsanityRemasteredContent.LoadContent();
-
-            harmony.PatchAll();
-        }
-
-        private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
-        {
-            ModIntegrator.BeginIntegrations(args.LoadedAssembly);
-        }
-
-        private void SetupModManager()
-        {
-            GameObject sanityObject = new("Sanity Mod");
-            sanityObject.AddComponent<InsanityGameManager>();
-            sanityObject.AddComponent<InsanitySoundManager>();
-            sanityObject.AddComponent<HallucinationManager>().enabled = false;
-            SanityModObject = sanityObject;
-            SanityModObject.hideFlags = HideFlags.HideAndDontSave;
-        }
-
-        private void OnSceneLoaded(Scene level, LoadSceneMode loadEnum)
-        {
-            if (level.name == SceneNames.SampleSceneRelay.ToString() && !SanityModObject.activeInHierarchy)
-            {
-                SanityModObject.SetActive(true);
-            }
-            if (level.name == SceneNames.MainMenu.ToString())
-            {
-                if (SanityModObject)
-                {
-                    InsanitySoundManager.Instance.StopModSounds();
-                    SanityModObject.hideFlags = HideFlags.HideAndDontSave;
-                }
-                else// if (!SanityModObject)
-                {
-                    SetupModManager();
-                    SanityModObject.hideFlags = HideFlags.HideAndDontSave;
-                }
-            }
-        }
-    }
-    public enum HallucinationType
-    {
-        Staring,
-        Wandering,
-        Approaching
-    }
-    internal class AnimationID
-    {
-        public const string PlayerWalking = "Walking";
-
-        public const string PlayerCrouching = "crouching";
-
-        public const string SpiderMoving = "moving";
-
-        public const string BrackenMoving = "sneak";
-    }
 }
 namespace InsanityRemastered.Utilities
 {
@@ -782,12 +680,6 @@ namespace InsanityRemastered.Hallucinations
 
         public virtual void Wander()
         {
-            //IL_0061: Unknown result type (might be due to invalid IL or missing references)
-            //IL_006c: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0034: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0040: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0046: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0047: Unknown result type (might be due to invalid IL or missing references)
             if (!wanderSpot)
             {
                 agent.SetDestination(RoundManager.Instance.GetRandomNavMeshPositionInRadius(aiNodes[Random.Range(0, aiNodes.Length)].transform.position, 12f, default(NavMeshHit)));
