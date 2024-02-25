@@ -2,8 +2,6 @@
 using HarmonyLib;
 using InsanityRemastered.General;
 using InsanityRemastered.ModIntegration;
-using InsanityRemasteredMod;
-using InsanityRemasteredMod.General;
 using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;

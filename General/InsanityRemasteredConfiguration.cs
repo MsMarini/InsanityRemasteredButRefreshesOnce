@@ -1,0 +1,130 @@
+﻿using BepInEx.Configuration;
+using System.Collections.Generic;
+
+namespace InsanityRemastered.General
+{
+    internal class InsanityRemasteredConfiguration
+    {
+        public static int insanityMaxPlayerAmountScaling { get; set; }
+
+        public static List<string> hallucinationTipTexts = new List<string> { "I'm always watching.", "behind you.", "You will never make it out of here.", "Did you see that?", "The company will never be satisfied. This is all pointless.", "you are the only one alive." };
+
+        public static List<string> statusEffectTexts = new List<string> { "WARNING:\n\nMultiple organ failures detected. Please lie down and hope it ends quickly.", "SYSTEM ERROR:\n\nLife support power is dropping. Please return to your ship immediately.", "Unknown lifeform detected nearby." };
+
+        public static bool panicAttackDeathsEnabled { get; set; }
+
+        public static bool auditoryHallucinationsEnabled { get; set; }
+
+        public static bool modelHallucinationsEnabled { get; set; }
+
+        public static bool itemHallucinationsEnabled { get; set; }
+
+        public static bool lightsOffEventEnabled { get; set; }
+
+        public static bool panicAttacksEnabled { get; set; }
+
+        public static bool panicAttackFXEnabled { get; set; }
+
+        public static bool messageHallucinationsEnabled { get; set; }
+
+        public static bool customSFXEnabled { get; set; }
+
+        public static bool sanityRemindersEnabled { get; set; }
+
+        public static bool useExperimentalSkinwalkerVersion { get; set; }
+
+        public static float skinwalkerWalkiesFrequency { get; set; }
+
+        public static float sanityGainLightProximity { get; set; }
+
+        public static float sanityGainHearingWalkies { get; set; }
+
+        public static bool skinwalkerWalkiesEnabled { get; set; }
+
+        public static bool panicAttackDebuffsEnabled { get; set; }
+
+        public static float sanityLossNearPlayersReduction { get; set; }
+
+        public static float SFXVolume
+        {
+            get => SFXVolume;
+            set => SFXVolume = Math.Clamp(value, 0, 1);
+        }
+
+        public static float rngCheckTimerMultiplier { get; set; }
+
+        public static float insanitySoloScaling { get; set; }
+
+        public static float sanityLossLightsOffEvent { get; set; }
+
+        public static float sanityLossLookingAtModelHallucination { get; set; }
+
+        public static float sanityLossPanicAttack { get; set; }
+
+        public static float sanityLossDarkOutside { get; set; }
+
+        public static float sanityGainLightOutside { get; set; }
+
+        public static float sanityLossInsideFactory { get; set; }
+
+        public static float sanityGainInsideShip { get; set; }
+
+        public static float sanityGainFlashlight { get; set; }
+
+        public static void Initialize(ConfigFile Config)
+        {
+            SFXVolume = Config.Bind("Volume", "Stinger/Drone volume", 0.25f, "Sets the volume of the stinger and drone sounds.\nValue Constraints: 0.0 - 1.0").Value;
+
+            panicAttacksEnabled = Config.Bind("General", "Enable panic attacks", true, "Enables panic attacks.").Value;
+            panicAttackDeathsEnabled = Config.Bind("General", "Enable deaths from panic attacks", false, "Enables the possibility to die when having a panic attack.").Value;
+            panicAttackFXEnabled = Config.Bind("General", "Enable panic attack effects", true, "Enables the auditory and visual effects from panic attacks.").Value;
+            panicAttackDebuffsEnabled = Config.Bind("General", "Enable panic attack debuffs", true, "Enables all panic attack debuffs. (e.g. slowness, cloudy vision)").Value;
+            sanityRemindersEnabled = Config.Bind("General", "Enable sanity level notifications", true, "Enables notifications as your insanity begins to increase.").Value;
+
+            insanityMaxPlayerAmountScaling = Config.Bind("Scaling", "Max player count for sanity loss scaling", 4, "Sets the max amount of players to take into account when scaling sanity loss.\nValue Constraints: 1 - 16").Value;
+            insanitySoloScaling = Config.Bind("Scaling", "Solo insanity speed scaling", 0.75f, "Sets the scaling of insanity gain when playing solo. \nValue Constraints: 0.0 - 1.0").Value;
+
+            sanityLossNearPlayersReduction = Config.Bind("Sanity Loss", "Reduction when near other players", 0.5f, "Multiplies the final sanity loss by this amount when near other players. Lower values reduce sanity loss.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossLightsOffEvent = Config.Bind("Sanity Loss", "Sanity loss during Lights Off event", 0.1f, "Sets the sanity loss during the Lights Off event.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossLookingAtModelHallucination = Config.Bind("Sanity Loss", "Sanity loss looking at a model hallucination", 0.1f, "Sets the sanity loss when looking at a model hallucination.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossPanicAttack = Config.Bind("Sanity Loss", "Sanity loss during a panic attack", 1.0f, "Sets the sanity loss during a panic attack.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossInsideFactory = Config.Bind("Sanity Loss", "Sanity loss inside the factory", 0.2f, "Sets the base sanity loss when you are inside the factory.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossDarkOutside = Config.Bind("Sanity Loss", "Sanity loss outside during nighttime", 0.1f, "Sets the base sanity loss when you are outside at night.\nValue Constraints: 0.0 - 1.0").Value;
+
+            sanityGainLightProximity = Config.Bind("Sanity Gain", "Sanity gain near light", 0.04f, "Sets the sanity gain when near a light source.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityGainHearingWalkies = Config.Bind("Sanity Gain", "Sanity gain hearing walkies", 0.04f, "Sets the sanity gain when hearing other players through walkie talkies.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityGainFlashlight = Config.Bind("Sanity Gain", "Sanity gain with active flashlight", 0.08f, "Sets the sanity gain with an active flashlight.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityGainInsideShip = Config.Bind("Sanity Gain", "Sanity gain inside ship", 0.32f, "Sets the base sanity gain when inside the ship.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityGainLightOutside = Config.Bind("Sanity Gain", "Sanity gain outside during daytime", 0.16f, "Sets the base sanity gain when you are outside during day.\nValue Constraints: 0.0 - 1.0").Value;
+
+
+            rngCheckTimerMultiplier = Config.Bind("Hallucinations", "Multiplier for hallucination RNG check", 1.0f, "A multiplier that affects the frequency of hallucinations. Higher values reduce the frequency.\nValue Constraints: 0.1 - 4.0").Value;
+            messageHallucinationsEnabled = Config.Bind("Hallucinations", "Enable message hallucinations", true, "Enables cryptic hallucination messages from the system.").Value;
+            itemHallucinationsEnabled = Config.Bind("Hallucinations", "Enable item hallucinations", true, "Enables hallucinations of fake items.").Value;
+            modelHallucinationsEnabled = Config.Bind("Hallucinations", "Enable model hallucinations", true, "Enables hallucinations of fake players or enemy models.").Value;
+            lightsOffEventEnabled = Config.Bind("Hallucinations", "Enable Lights Off event", false, "Enables a hallucination event in which the lights are shut off.").Value;
+            auditoryHallucinationsEnabled = Config.Bind("Hallucinations", "Enable auditory hallucinations", true, "Enables auditory hallucinations.").Value;
+            customSFXEnabled = Config.Bind("Misc", "Enable custom SFX", true, "Use custom sound effects for auditory hallucinations.").Value;
+            skinwalkerWalkiesEnabled = Config.Bind("Hallucinations", "Enable skinwalker walkies", false, "Enables walkie talkies to play skinwalker clips.").Value;
+            skinwalkerWalkiesFrequency = Config.Bind("Hallucinations", "Multiplier for skinwalker walkie frequency", 0.35f, "Enables walkie talkies to play skinwalker clips.\nValue Constraints: 0.1 - 1.0").Value;
+
+            useExperimentalSkinwalkerVersion = Config.Bind("Misc", "Use experimental skinwalker version", false, "Allows InsanityRemastered to load the experimental version of Skinwalker.").Value;
+        }
+
+        public static void ValidateSettings()
+        {
+            if (SFXVolume > 1f)
+            {
+                SFXVolume = 1f;
+            }
+            if (insanityMaxPlayerAmountScaling <= 0)
+            {
+                insanityMaxPlayerAmountScaling = 1;
+            }
+            if (rngCheckTimerMultiplier <= 0f)
+            {
+                rngCheckTimerMultiplier = 1f;
+            }
+        }
+    }
+}
