@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using System.Reflection;
 
 namespace InsanityRemastered.General
 {
@@ -122,7 +123,16 @@ namespace InsanityRemastered.General
             {
                 InsanityRemasteredLogger.logTimer = 0f;
 
-                InsanityRemasteredLogger.LogVariables([LocalPlayer.insanitySpeedMultiplier, LocalPlayer.insanityLevel, panicAttackLevel, InsanityGameManager.Instance.LightsOff, PlayerPatcher.CurrentSanityLevel]);
+                InsanityRemasteredLogger.LogVariables([
+                    LocalPlayer.insanitySpeedMultiplier,
+                    LocalPlayer.insanityLevel,
+                    panicAttackLevel,
+                    InsanityGameManager.Instance.LightsOff,
+                    PlayerPatcher.CurrentSanityLevel,
+                    Assembly.GetExecutingAssembly(),
+                    Assembly.GetExecutingAssembly().GetName().Name,
+                    Assembly.GetExecutingAssembly().GetName().Version
+                    ]);
 
                 // InsanityRemasteredLogger.Log("insanityLevel = " + LocalPlayer.insanityLevel);
                 // InsanityRemasteredLogger.Log("panicAttackLevel = " + panicAttackLevel);

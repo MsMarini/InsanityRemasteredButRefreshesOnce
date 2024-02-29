@@ -96,17 +96,20 @@ namespace InsanityRemastered
 
         private static void LoadSounds()
         {
-            string folderName;
-            if (InsanityRemasteredConfiguration.useThunderstoreFolderPath)
-                folderName = "Epicool-InsanityRemastered";
-            else
-                folderName = "";
+            string modFolder;
 
-            string sfxPath = Path.Combine(DataFolder, folderName, "soundresources_sfx");
-            string ambiencePath = Path.Combine(DataFolder, folderName, "soundresources_stingers");
-            string fakePlayerPath = Path.Combine(DataFolder, folderName, "soundresources_hallucination");
-            string dronePath = Path.Combine(DataFolder, folderName, "soundresources_drones");
-            string lcGamePath = Path.Combine(DataFolder, folderName, "soundresources_lc");
+            string resourcesFolder = "Resources";
+
+            if (InsanityRemasteredConfiguration.useThunderstoreFolderPath)
+                modFolder = "Epicool-InsanityRemastered";
+            else
+                modFolder = "InsanityRemastered";
+
+            string sfxPath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_sfx");
+            string ambiencePath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_stingers");
+            string fakePlayerPath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_hallucination");
+            string dronePath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_drones");
+            string lcGamePath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_lc");
 
             AssetBundle sfx = AssetBundle.LoadFromFile(sfxPath);
             AssetBundle ambience = AssetBundle.LoadFromFile(ambiencePath);

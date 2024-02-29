@@ -3,10 +3,18 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<AssemblyName>InsanityRemastered</AssemblyName>
-		<Description>Fork of InsanityRemastered by BudgetAirpods</Description>
+		<Description>Fork of InsanityRemastered
+Original by BudgetAirpods</Description>
 		<Version>1.2.0</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>latest</LangVersion>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+		<RepositoryUrl>https://github.com/Toimis/InsanityRemastered</RepositoryUrl>
+		<Company>Epicool</Company>
+		<Title>Insanity Remastered</Title>
+		<PackageIcon>icon.png</PackageIcon>
+		<Copyright>MIT License</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -35,5 +43,15 @@
 		<Reference Include="DissonanceVoip">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\DissonanceVoip.dll</HintPath>
 		</Reference>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="README.md">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
+	  <None Update="Resources\icon.png">
+	    <Pack>True</Pack>
+	    <PackagePath>\</PackagePath>
+	  </None>
 	</ItemGroup>
 </Project>

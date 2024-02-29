@@ -116,7 +116,7 @@ namespace InsanityRemastered.General
             logDebugVariables = Config.Bind("Misc", "Log variables for debugging", false, "Logs variables intended for debugging and balancing.").Value;
         }
 
-        public static void ValidateSettings()
+        public static void ValidateSettings() /// double check this later
         {
             if (SFXVolume > 1f)
             {
