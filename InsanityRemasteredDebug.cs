@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using InsanityRemastered.General;
 using InsanityRemastered.Patches;
-using Unity.Netcode;
 using UnityEngine;
 
 namespace InsanityRemastered

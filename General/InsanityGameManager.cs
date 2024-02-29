@@ -4,11 +4,9 @@ using GameNetcodeStuff;
 using InsanityRemastered.Hallucinations;
 using InsanityRemastered.ModIntegration;
 using InsanityRemastered.Utilities;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-using UnityEngine.Events;
 using UnityEngine.SceneManagement;
 
 namespace InsanityRemastered.General

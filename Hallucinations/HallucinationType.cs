@@ -1,5 +1,4 @@
-﻿using System;
-namespace InsanityRemastered
+﻿namespace InsanityRemastered
 {
     public enum HallucinationType
     {

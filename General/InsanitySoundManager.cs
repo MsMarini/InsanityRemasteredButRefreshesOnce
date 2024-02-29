@@ -1,5 +1,4 @@
 ﻿using InsanityRemastered.ModIntegration;
-using InsanityRemastered;
 using UnityEngine;
 
 namespace InsanityRemastered.General

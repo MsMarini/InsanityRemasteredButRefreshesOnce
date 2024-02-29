@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 
 namespace InsanityRemastered
 {
-    [BepInPlugin("Epicool.InsanityRemastered", "Insanity Remastered", "1.2.0")]
+    [BepInPlugin(modGUID, modName, modVersion)]
     public class InsanityRemasteredBase : BaseUnityPlugin
     {
         public static InsanityRemasteredBase Instance;

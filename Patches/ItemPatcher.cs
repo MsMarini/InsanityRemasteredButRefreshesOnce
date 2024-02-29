@@ -39,8 +39,7 @@ namespace InsanityRemastered.Patches
             if (walkieRNGTimer > walkieRNGFrequency && __instance.isBeingUsed)
             {
                 walkieRNGTimer = 0f;
-                float num = UnityEngine.Random.Range(0f, 1f);
-                if (num <= 0.35f && SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreOtherPlayersConnected)
+                if (SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreOtherPlayersConnected && Random.Range(0f, 1f) < 0.35f)
                 {
                     __instance.thisAudio.PlayOneShot(SkinwalkerModIntegration.GetRandomClip());
                 }

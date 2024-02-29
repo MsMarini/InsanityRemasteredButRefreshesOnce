@@ -1,5 +1,4 @@
-﻿using System;
-namespace InsanityRemastered
+﻿namespace InsanityRemastered
 {
     internal class AnimationID
     {

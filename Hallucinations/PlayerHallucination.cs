@@ -1,5 +1,4 @@
 ﻿using GameNetcodeStuff;
-using InsanityRemastered;
 using InsanityRemastered.General;
 using InsanityRemastered.ModIntegration;
 using InsanityRemastered.Patches;
