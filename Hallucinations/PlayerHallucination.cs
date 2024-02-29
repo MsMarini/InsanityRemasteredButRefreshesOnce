@@ -9,89 +9,65 @@ using UnityEngine.AI;
 
 namespace InsanityRemastered.Hallucinations
 {
-    internal class PlayerHallucination : InsanityRemastered_AI
+    internal class PlayerHallucination : InsanityRemasteredAI
     {
         private float stareTimer = 5f;
-
         private float waitTimeForNewWander = 5f;
-
-        private float speakTimer = 3f;
-
         private float wanderTimer;
-
         private float stareDuration;
 
-        private float speakDuration;
-
         private float rotationSpeed = 0.95f;
-
         private float footstepDistance = 1.5f;
 
         private int minWanderPoints = 3;
-
         private int maxWanderPoints = 5;
-
         private int currentFootstepSurfaceIndex;
-
-        private List<Vector3> wanderPositions = new List<Vector3>();
-
+        private List<Vector3> wanderPositions = [];
         private Vector3 lastStepPosition;
-
         private AudioSource footstepSource;
-
         private bool spoken;
-
         private bool seenPlayer;
-
         public static SkinnedMeshRenderer suitRenderer;
 
         private void StopAndStare()
         {
-            //IL_003f: Unknown result type (might be due to invalid IL or missing references)
             soundSource.Stop();
             seenPlayer = true;
-            hallucinationAnimator.SetBool("Walking", false);
             agent.isStopped = true;
-            Stare(((Component)base.LocalPlayer).transform.position);
+            hallucinationAnimator.SetBool(AnimationID.PlayerWalking, false);
+            
+
+            Stare(LocalPlayer.transform.position);
+
             if (SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreOtherPlayersConnected && !spoken)
             {
                 soundSource.PlayOneShot(SkinwalkerModIntegration.GetRandomClip());
                 spoken = true;
             }
+
             stareDuration += Time.deltaTime;
             if (stareDuration > stareTimer)
             {
                 agent.isStopped = false;
-                ((Behaviour)hallucinationAnimator).enabled = true;
-                hallucinationAnimator.SetBool("Walking", true);
+                hallucinationAnimator.enabled = true;
+                hallucinationAnimator.SetBool(AnimationID.PlayerWalking, true);
                 hallucinationType = HallucinationType.Approaching;
             }
         }
 
         private void Stare(Vector3 position)
         {
-            //IL_0001: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0008: Unknown result type (might be due to invalid IL or missing references)
-            //IL_000d: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0012: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0017: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0024: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0029: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0036: Unknown result type (might be due to invalid IL or missing references)
-            Quaternion val = Quaternion.LookRotation(position - ((Component)this).transform.position);
-            ((Component)this).transform.rotation = Quaternion.Slerp(((Component)this).transform.rotation, val, rotationSpeed * Time.deltaTime);
+            Quaternion lookRotation = Quaternion.LookRotation(position - transform.position);
+            transform.rotation = Quaternion.Slerp(transform.rotation, lookRotation, rotationSpeed * Time.deltaTime);
         }
 
         private void GenerateNewDestination()
         {
-            //IL_002a: Unknown result type (might be due to invalid IL or missing references)
-            //IL_002f: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0036: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0043: Unknown result type (might be due to invalid IL or missing references)
-            hallucinationAnimator.SetBool("Walking", true);
-            Vector3 val = wanderPositions[Random.Range(0, wanderPositions.Count)];
-            wanderPositions.Remove(val);
-            agent.SetDestination(val);
+            hallucinationAnimator.SetBool(AnimationID.PlayerWalking, true);
+
+            Vector3 randomPosition = wanderPositions[Random.Range(0, wanderPositions.Count)];
+            wanderPositions.Remove(randomPosition);
+            agent.SetDestination(randomPosition);
             agent.isStopped = false;
             wanderSpot = true;
         }
@@ -100,11 +76,13 @@ namespace InsanityRemastered.Hallucinations
         {
             if (wanderPositions.Count == 0)
             {
-                FinishHallucination(touched: false);
+                FinishHallucination(false);
             }
-            hallucinationAnimator.SetBool("Walking", false);
+
+            hallucinationAnimator.SetBool(AnimationID.PlayerWalking, false);
             agent.isStopped = true;
             wanderTimer += Time.deltaTime;
+
             if (wanderTimer > waitTimeForNewWander)
             {
                 wanderTimer = 0f;
@@ -114,18 +92,14 @@ namespace InsanityRemastered.Hallucinations
 
         private void GenerateWanderPoints()
         {
-            //IL_0049: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0055: Unknown result type (might be due to invalid IL or missing references)
-            //IL_005b: Unknown result type (might be due to invalid IL or missing references)
-            //IL_005c: Unknown result type (might be due to invalid IL or missing references)
             if (wanderPositions.Count > 0)
             {
                 wanderPositions.Clear();
             }
-            int num = Random.Range(minWanderPoints, maxWanderPoints);
-            for (int i = 0; i < num; i++)
+
+            for (int i = 0; i < Random.Range(minWanderPoints, maxWanderPoints); i++)
             {
-                wanderPositions.Add(RoundManager.Instance.GetRandomNavMeshPositionInRadius(((Component)this).transform.position, 20f, default(NavMeshHit)));
+                wanderPositions.Add(RoundManager.Instance.GetRandomNavMeshPositionInRadius(transform.position, 20f));
             }
         }
 
@@ -133,28 +107,23 @@ namespace InsanityRemastered.Hallucinations
         {
             GetCurrentMaterialStandingOn();
             int num = Random.Range(0, StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].clips.Length);
+
             footstepSource.pitch = Random.Range(0.93f, 1.07f);
             footstepSource.PlayOneShot(StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].clips[num], 5.5f);
         }
 
         private void GetCurrentMaterialStandingOn()
         {
-            //IL_0009: Unknown result type (might be due to invalid IL or missing references)
-            //IL_000e: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0013: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0018: Unknown result type (might be due to invalid IL or missing references)
-            //IL_001d: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0027: Unknown result type (might be due to invalid IL or missing references)
-            Ray val = default(Ray);
-            ((Ray)(ref val))..ctor(((Component)this).transform.position + Vector3.up, -Vector3.up);
-            RaycastHit val2 = default(RaycastHit);
-            if (!Physics.Raycast(val, ref val2, 6f, StartOfRound.Instance.walkableSurfacesMask, (QueryTriggerInteraction)1) || ((Component)((RaycastHit)(ref val2)).collider).CompareTag(StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].surfaceTag))
+            Ray materialRay = new(transform.position + Vector3.up, -Vector3.up);
+
+            if (!Physics.Raycast(materialRay, out RaycastHit hit, 6f, StartOfRound.Instance.walkableSurfacesMask, QueryTriggerInteraction.Ignore) || hit.collider.CompareTag(StartOfRound.Instance.footstepSurfaces[currentFootstepSurfaceIndex].surfaceTag))
             {
                 return;
             }
+
             for (int i = 0; i < StartOfRound.Instance.footstepSurfaces.Length; i++)
             {
-                if (((Component)((RaycastHit)(ref val2)).collider).CompareTag(StartOfRound.Instance.footstepSurfaces[i].surfaceTag))
+                if (hit.collider.CompareTag(StartOfRound.Instance.footstepSurfaces[i].surfaceTag))
                 {
                     currentFootstepSurfaceIndex = i;
                     break;
@@ -164,53 +133,49 @@ namespace InsanityRemastered.Hallucinations
 
         private void Footstep()
         {
-            //IL_0007: Unknown result type (might be due to invalid IL or missing references)
-            //IL_000d: Unknown result type (might be due to invalid IL or missing references)
-            //IL_002b: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0030: Unknown result type (might be due to invalid IL or missing references)
-            if (Vector3.Distance(((Component)this).transform.position, lastStepPosition) > footstepDistance)
+            if (Vector3.Distance(transform.position, lastStepPosition) > footstepDistance)
             {
-                lastStepPosition = ((Component)this).transform.position;
+                lastStepPosition = transform.position;
                 PlayFootstepSound();
             }
         }
 
         private int GetRandomPlayerSuitID()
         {
-            PlayerControllerB val = StartOfRound.Instance.allPlayerScripts[Random.Range(0, StartOfRound.Instance.allPlayerScripts.Length)];
-            if (val.isPlayerControlled)
+            PlayerControllerB randomPlayer;
+
+            do
             {
-                return val.currentSuitID;
+                randomPlayer = StartOfRound.Instance.allPlayerScripts[Random.Range(0, StartOfRound.Instance.allPlayerScripts.Length)];
             }
-            GetRandomPlayerSuitID();
-            return base.LocalPlayer.currentSuitID;
+            while (!randomPlayer.isPlayerControlled);
+
+            return randomPlayer.currentSuitID;
         }
 
         private void SetSuit(int id)
         {
             Material suitMaterial = StartOfRound.Instance.unlockablesList.unlockables[id].suitMaterial;
-            ((Renderer)suitRenderer).material = suitMaterial;
+            suitRenderer.material = suitMaterial;
         }
 
         public override void Start()
         {
             base.Start();
-            base.sound = InsanityRemasteredContent.PlayerHallucinationSounds;
+
+            sound = InsanityRemasteredContent.PlayerHallucinationSounds;
             hallucinationAnimator.runtimeAnimatorController = StartOfRound.Instance.localClientAnimatorController;
-            footstepSource = ((Component)this).gameObject.AddComponent<AudioSource>();
+            footstepSource = gameObject.AddComponent<AudioSource>();
             footstepSource.spatialBlend = 1f;
         }
 
         public override void Update()
         {
-            //IL_0028: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0046: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0056: Unknown result type (might be due to invalid IL or missing references)
-            //IL_00bb: Unknown result type (might be due to invalid IL or missing references)
             base.Update();
+
             if (hallucinationType == HallucinationType.Wandering)
             {
-                if (HasLineOfSightToPosition(((Component)this).transform, ((Component)base.LocalPlayer).transform.position, 45f, 45) || Vector3.Distance(((Component)this).transform.position, ((Component)base.LocalPlayer).transform.position) < 3f || seenPlayer)
+                if (HasLineOfSightToPosition(transform, LocalPlayer.transform.position, 45f, 45) || Vector3.Distance(transform.position, LocalPlayer.transform.position) < 3f || seenPlayer)
                 {
                     StopAndStare();
                 }
@@ -223,11 +188,13 @@ namespace InsanityRemastered.Hallucinations
             {
                 ChasePlayer();
             }
+
             if (hallucinationType == HallucinationType.Staring)
             {
-                Stare(((Component)base.LocalPlayer).transform.position);
+                Stare(LocalPlayer.transform.position);
                 TimerTick();
             }
+
             Footstep();
         }
 
@@ -241,51 +208,58 @@ namespace InsanityRemastered.Hallucinations
             if (touched)
             {
                 float scareRNG = Random.Range(0f, 1f);
-                if (scareRNG < 0.15f)
+                if (scareRNG < 0.2f)
                 {
-                    LocalPlayer.DamagePlayer(Random.Range(1, 5), false, true, (CauseOfDeath)6, 0, false, default(Vector3));
+                    LocalPlayer.DamagePlayer(Random.Range(1, 5), false, causeOfDeath: CauseOfDeath.Suffocation); /// can this actually kill?
                     return;
                 }
-                else if (scareRNG < 0.45f)
+                else if (scareRNG < 0.5f)
                 {
                     HallucinationManager.Instance.PanicAttackSymptom(true);
                 }
-                base.FinishHallucination(touched: true);
+
+                base.FinishHallucination(true);
             }
             else
             {
-                base.FinishHallucination(touched: false);
+                base.FinishHallucination(false);
             }
         }
 
         public override void Wander()
         {
-            //IL_002d: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0038: Unknown result type (might be due to invalid IL or missing references)
+            /* maybe apparatus, if nearby?
+            if(poi == null || poi == Vector3.zero)
+            {
+                poi = GeneratePointOfInterest();
+            }
+            */
             if (wanderPositions.Count != 0 && !wanderSpot)
             {
                 GenerateNewDestination();
             }
-            if (Vector3.Distance(((Component)this).transform.position, agent.destination) <= agent.stoppingDistance && wanderSpot)
+            if (Vector3.Distance(transform.position, agent.destination) <= agent.stoppingDistance && wanderSpot)
             {
                 ReachDestination();
             }
+            // LookAtPointOfInterest();
         }
 
         public override void Spawn()
         {
             base.Spawn();
+
             seenPlayer = false;
             SetSuit(GetRandomPlayerSuitID());
             hallucinationType = HallucinationType.Staring;
+
             if (PlayerPatcher.CurrentSanityLevel >= SanityLevel.Medium)
             {
                 GenerateWanderPoints();
                 hallucinationType = HallucinationType.Wandering;
             }
-            float num = Random.Range(0f, 1f);
-            float num2 = Random.Range(0f, 1f);
-            if (num >= 0.5f && SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreOtherPlayersConnected)
+
+            if (SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreOtherPlayersConnected && Random.Range(0f, 1f) < 0.5f)
             {
                 soundSource.clip = SkinwalkerModIntegration.GetRandomClip();
             }
@@ -293,27 +267,28 @@ namespace InsanityRemastered.Hallucinations
             {
                 soundSource.clip = InsanitySoundManager.Instance.LoadFakePlayerSound();
             }
-            if (num2 > 0.25f)
+
+            if (Random.Range(0f, 1f) < 0.7f)
             {
-                HUDManager.Instance.DisplayTip("", InsanityRemasteredConfiguration.tipMessageTexts[0], true, false, "LC_Tip1");
+                HUDManager.Instance.DisplayTip("", InsanityRemasteredConfiguration.tipMessageTexts[0], true);
             }
+
             spoken = false;
             soundSource.Play();
-            hallucinationAnimator.SetBool("Walking", false);
+            hallucinationAnimator.SetBool(AnimationID.PlayerWalking, false);
             stareDuration = 0f;
         }
 
         public override void SetupVariables()
         {
-            //IL_0052: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0057: Unknown result type (might be due to invalid IL or missing references)
             base.SetupVariables();
-            agent.obstacleAvoidanceType = (ObstacleAvoidanceType)0;
-            suitRenderer = ((Component)this).GetComponentInChildren<SkinnedMeshRenderer>(false);
-            base.duration = 30f;
+
+            agent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+            suitRenderer = GetComponentInChildren<SkinnedMeshRenderer>(false);
+            duration = 30f;
             hallucinationAnimator.runtimeAnimatorController = StartOfRound.Instance.localClientAnimatorController;
             hallucinationSpawnType = HallucinationSpawnType.NotLooking;
-            lastStepPosition = ((Component)this).transform.position;
+            lastStepPosition = transform.position;
         }
     }
 }

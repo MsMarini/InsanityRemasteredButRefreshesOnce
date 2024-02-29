@@ -29,19 +29,26 @@ namespace InsanityRemastered
 
         public static void SpawnItem(string itemName)
         {
-            foreach (Item items in StartOfRound.Instance.allItemsList.itemsList)
+            foreach (Item item in StartOfRound.Instance.allItemsList.itemsList)
             {
-                if (((Object)items).name == itemName)
+                if (item.name == itemName)
                 {
-                    GameObject val = Object.Instantiate<GameObject>(items.spawnPrefab, ((Component)PlayerPatcher.LocalPlayer).transform.position + ((Component)PlayerPatcher.LocalPlayer).transform.forward * 2f, ((Component)PlayerPatcher.LocalPlayer).transform.rotation, RoundManager.Instance.spawnedScrapContainer);
-                    GrabbableObject component = val.GetComponent<GrabbableObject>();
-                    component.fallTime = 1f;
-                    component.scrapPersistedThroughRounds = false;
-                    component.grabbable = true;
-                    if (items.isScrap)
+                    GameObject prop = Object.Instantiate (
+                        item.spawnPrefab,
+                        PlayerPatcher.LocalPlayer.transform.position + PlayerPatcher.LocalPlayer.transform.forward * 2f,
+                        PlayerPatcher.LocalPlayer.transform.rotation,
+                        RoundManager.Instance.spawnedScrapContainer
+                    );
+
+                    GrabbableObject grabbable = prop.GetComponent<GrabbableObject>();
+                    grabbable.fallTime = 1f;
+                    grabbable.scrapPersistedThroughRounds = false;
+                    grabbable.grabbable = true;
+
+                    if (item.isScrap)
                     {
-                        component.SetScrapValue(Random.Range(items.minValue, items.maxValue));
-                        ((NetworkBehaviour)component).NetworkObject.Spawn(false);
+                        grabbable.SetScrapValue(Random.Range(item.minValue, item.maxValue));
+                        grabbable.NetworkObject.Spawn(false);
                     }
                 }
             }

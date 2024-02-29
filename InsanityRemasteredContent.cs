@@ -1,4 +1,5 @@
 ﻿using BepInEx;
+using InsanityRemastered.General;
 using System.IO;
 using UnityEngine;
 
@@ -7,25 +8,21 @@ namespace InsanityRemastered
     internal class InsanityRemasteredContent
     {
         internal static Material[] Materials { get; set; }
-
         internal static GameObject[] EnemyModels { get; set; }
-
         internal static Texture2D[] Textures { get; set; }
 
         internal static AudioClip[] AuditoryHallucinations { get; set; }
-
         internal static AudioClip[] Stingers { get; set; }
-
         internal static AudioClip[] PlayerHallucinationSounds { get; set; }
-
         internal static AudioClip[] LCGameSFX { get; set; }
-
         internal static AudioClip[] Drones { get; set; }
 
         private static string DataFolder => Path.GetFullPath(Paths.PluginPath);
 
         public static void LoadContent()
         {
+            //LoadEnemy();
+            //LoadMaterials();
             LoadSounds();
         }
 
@@ -33,7 +30,7 @@ namespace InsanityRemastered
         {
             for (int i = 0; i < EnemyModels.Length; i++)
             {
-                if (((Object)EnemyModels[i]).name == name)
+                if (EnemyModels[i].name == name)
                 {
                     return EnemyModels[i];
                 }
@@ -45,9 +42,9 @@ namespace InsanityRemastered
         {
             for (int i = 0; i < EnemyModels.Length; i++)
             {
-                if (((Object)Materials[i]).name == name)
+                if (Materials[i].name == name)
                 {
-                    InsanityRemasteredLogger.Log("Sucessfully loaded material: " + name);
+                    InsanityRemasteredLogger.Log("Successfully loaded material: " + name);
                     return Materials[i];
                 }
             }
@@ -58,9 +55,9 @@ namespace InsanityRemastered
         {
             for (int i = 0; i < EnemyModels.Length; i++)
             {
-                if (((Object)Textures[i]).name == name)
+                if (Textures[i].name == name)
                 {
-                    InsanityRemasteredLogger.Log("Sucessfully loaded texture: " + name);
+                    InsanityRemasteredLogger.Log("Successfully loaded texture: " + name);
                     return Textures[i];
                 }
             }
@@ -69,52 +66,64 @@ namespace InsanityRemastered
 
         private static void LoadEnemy()
         {
-            string text = Path.Combine(DataFolder, "insanityremastered_enemies");
-            InsanityRemasteredLogger.Log(text);
-            AssetBundle val = AssetBundle.LoadFromFile(text);
-            if ((Object)(object)val == (Object)null)
+            string enemyBundlePath = Path.Combine(DataFolder, "insanityremastered_enemies");
+            InsanityRemasteredLogger.Log(enemyBundlePath);
+            AssetBundle enemies = AssetBundle.LoadFromFile(enemyBundlePath);
+            
+            if (!enemies)
             {
-                InsanityRemasteredLogger.Log("Failed to load enemies.");
+                InsanityRemasteredLogger.LogWarning("Failed to load enemies.");
             }
-            EnemyModels = val.LoadAllAssets<GameObject>();
+
+            EnemyModels = enemies.LoadAllAssets<GameObject>();
         }
 
         private static void LoadMaterials()
         {
-            string text = Path.Combine(DataFolder, "insanityremastered_materials");
-            AssetBundle val = AssetBundle.LoadFromFile(text);
-            if ((Object)(object)val == (Object)null)
+            string materialBundlePath = Path.Combine(DataFolder, "insanityremastered_materials");
+            InsanityRemasteredLogger.Log(materialBundlePath);
+            AssetBundle materials = AssetBundle.LoadFromFile(materialBundlePath);
+
+            if (!materials)
             {
-                InsanityRemasteredLogger.Log("Failed to load materials.");
+                InsanityRemasteredLogger.LogWarning("Failed to load materials.");
             }
-            Materials = val.LoadAllAssets<Material>();
-            Textures = val.LoadAllAssets<Texture2D>();
-            EnemyModels = val.LoadAllAssets<GameObject>();
+
+            Materials = materials.LoadAllAssets<Material>();
+            Textures = materials.LoadAllAssets<Texture2D>();
+            EnemyModels = materials.LoadAllAssets<GameObject>();
         }
 
         private static void LoadSounds()
         {
-            string folderName = "Epicool-InsanityRemastered";
-            string text = Path.Combine(DataFolder, folderName, "soundresources_sfx");
-            string text2 = Path.Combine(DataFolder, folderName, "soundresources_stingers");
-            string text3 = Path.Combine(DataFolder, folderName, "soundresources_hallucination");
-            string text4 = Path.Combine(DataFolder, folderName, "soundresources_drones");
-            string text5 = Path.Combine(DataFolder, folderName, "soundresources_lc");
-            AssetBundle val = AssetBundle.LoadFromFile(text);
-            AssetBundle val2 = AssetBundle.LoadFromFile(text2);
-            AssetBundle val3 = AssetBundle.LoadFromFile(text3);
-            AssetBundle val4 = AssetBundle.LoadFromFile(text4);
-            AssetBundle val5 = AssetBundle.LoadFromFile(text5);
-            if (val == null || val2 == null || val3 == null || text4 == null || text5 == null)
+            string folderName;
+            if (InsanityRemasteredConfiguration.useThunderstoreFolderPath)
+                folderName = "Epicool-InsanityRemastered";
+            else
+                folderName = "";
+
+            string sfxPath = Path.Combine(DataFolder, folderName, "soundresources_sfx");
+            string ambiencePath = Path.Combine(DataFolder, folderName, "soundresources_stingers");
+            string fakePlayerPath = Path.Combine(DataFolder, folderName, "soundresources_hallucination");
+            string dronePath = Path.Combine(DataFolder, folderName, "soundresources_drones");
+            string lcGamePath = Path.Combine(DataFolder, folderName, "soundresources_lc");
+
+            AssetBundle sfx = AssetBundle.LoadFromFile(sfxPath);
+            AssetBundle ambience = AssetBundle.LoadFromFile(ambiencePath);
+            AssetBundle fakePlayer = AssetBundle.LoadFromFile(fakePlayerPath);
+            AssetBundle drone = AssetBundle.LoadFromFile(dronePath);
+            AssetBundle lcGame = AssetBundle.LoadFromFile(lcGamePath);
+            if (sfx || ambience || fakePlayer || drone || lcGame)
             {
                 InsanityRemasteredLogger.LogError("Failed to load audio assets!");
                 return;
             }
-            AuditoryHallucinations = val.LoadAllAssets<AudioClip>();
-            Stingers = val2.LoadAllAssets<AudioClip>();
-            PlayerHallucinationSounds = val3.LoadAllAssets<AudioClip>();
-            Drones = val4.LoadAllAssets<AudioClip>();
-            LCGameSFX = val5.LoadAllAssets<AudioClip>();
+
+            AuditoryHallucinations = sfx.LoadAllAssets<AudioClip>();
+            Stingers = ambience.LoadAllAssets<AudioClip>();
+            PlayerHallucinationSounds = fakePlayer.LoadAllAssets<AudioClip>();
+            Drones = drone.LoadAllAssets<AudioClip>();
+            LCGameSFX = lcGame.LoadAllAssets<AudioClip>();
         }
     }
 }

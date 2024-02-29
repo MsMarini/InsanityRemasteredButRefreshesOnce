@@ -30,8 +30,18 @@ namespace InsanityRemastered.Patches
         [HarmonyPostfix]
         private static void _Awake(ref PlayerControllerB __instance)
         {
-            InsanityRemastered_AI.OnHallucinationEnded += LoseSanity;
+            InsanityRemasteredAI.OnHallucinationEnded += LoseSanity;
             GameEvents.OnItemSwitch += OnItemSwitch;
+            InsanityRemasteredLogger.Log("PlayerControllerB = " + __instance); /// temporary
+        }
+
+        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.Start))] //// woah there, i have no idea if this works
+        [HarmonyPostfix]
+        private static void _Start(PlayerControllerB __instance)
+        {
+            __instance.maxInsanityLevel = 100f;
+            InsanityRemasteredLogger.Log("Player controller patched.\nmaxInsanityLevel = " + __instance.maxInsanityLevel);
+            InsanityRemasteredLogger.Log("PlayerControllerB = " + __instance); /// temporary
         }
 
         [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.SetPlayerSanityLevel))]
@@ -68,13 +78,7 @@ namespace InsanityRemastered.Patches
 
                 if (PlayersConnected > 1)
                 {
-                    LocalPlayer.insanitySpeedMultiplier *= (float)Math.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125);
-
-                    if (InsanityGameManager.Instance.IsNearOtherPlayers)
-                        LocalPlayer.isPlayerAlone = false;
-                    else
-                        LocalPlayer.isPlayerAlone = true;
-
+                    LocalPlayer.isPlayerAlone = !InsanityGameManager.Instance.IsNearOtherPlayers;
                 }
 
                 if (InsanityGameManager.Instance.IsNearLightSource)
@@ -92,7 +96,7 @@ namespace InsanityRemastered.Patches
                 if (lookingAtModelHallucination)
                     LocalPlayer.insanitySpeedMultiplier += InsanityRemasteredConfiguration.sanityLossLookingAtModelHallucination;
 
-                if (HallucinationManager.Instance.PanicAttackLevel > 0f)
+                if (HallucinationManager.Instance.PanicAttackLevel > 0.5f)
                     LocalPlayer.insanitySpeedMultiplier += InsanityRemasteredConfiguration.sanityLossPanicAttack;
 
                 // final calculation
@@ -110,10 +114,12 @@ namespace InsanityRemastered.Patches
                 }
                 else // insanity is being gained
                 {
-                    if (!LocalPlayer.isPlayerAlone)
-                        LocalPlayer.insanitySpeedMultiplier *= InsanityRemasteredConfiguration.sanityLossNearPlayersReduction;
-                    else if (PlayersConnected == 1)
+                    if (PlayersConnected == 1)
                         LocalPlayer.insanitySpeedMultiplier *= InsanityRemasteredConfiguration.insanitySoloScaling;
+                    else if (!LocalPlayer.isPlayerAlone)
+                        LocalPlayer.insanitySpeedMultiplier *= (float)Math.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125) * InsanityRemasteredConfiguration.sanityLossNearPlayersReduction;
+                    else
+                        LocalPlayer.insanitySpeedMultiplier *= (float)Math.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125);
 
                     LocalPlayer.insanityLevel = Mathf.MoveTowards(LocalPlayer.insanityLevel, LocalPlayer.maxInsanityLevel, Time.deltaTime * LocalPlayer.insanitySpeedMultiplier);
                     return false;
@@ -128,18 +134,19 @@ namespace InsanityRemastered.Patches
         {
             PlayersConnected = StartOfRound.Instance.connectedPlayersAmount + 1;
             PlayersConnected = Mathf.Clamp(PlayersConnected, 1, InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling);
+            
             if (GameNetworkManager.Instance.gameHasStarted && LocalPlayer.isPlayerControlled && !LocalPlayer.isPlayerDead)
             {
                 UpdateStatusEffects();
-                if (HallucinationManager.Instance.PanicAttackLevel == 1f)
+                if (HallucinationManager.Instance.PanicAttackLevel > 0.9f)
                 {
                     CurrentSanityLevel = SanityLevel.Max;
                 }
-                else if (LocalPlayer.insanityLevel >= 100f)
+                else if (LocalPlayer.insanityLevel > 99f)
                 {
                     CurrentSanityLevel = SanityLevel.High;
                 }
-                else if (LocalPlayer.insanityLevel >= 50f)
+                else if (LocalPlayer.insanityLevel > 49f)
                 {
                     CurrentSanityLevel = SanityLevel.Medium;
                 }

@@ -7,14 +7,14 @@ using UnityEngine.AI;
 
 namespace InsanityRemastered.Hallucinations
 {
-    internal class InsanityRemastered_AI : MonoBehaviour
+    internal class InsanityRemasteredAI : MonoBehaviour
     {
         protected float duration = 30f;
         private float agentStoppingDistance = 3f;
         private float durationTimer;
         private bool notSeenYet = true;
         protected bool wanderSpot = false;
-        private bool setup = false;
+        private bool isSetUp = false;
 
         public HallucinationType hallucinationType;
         public HallucinationSpawnType hallucinationSpawnType = HallucinationSpawnType.NotLooking;
@@ -67,7 +67,7 @@ namespace InsanityRemastered.Hallucinations
             return false;
         }
 
-        public virtual void LookingAtHallucination() // currently unimplemented
+        public virtual void LookingAtHallucination() /// currently unimplemented, but i could add sanity loss here instead
         {
 
         }
@@ -126,36 +126,44 @@ namespace InsanityRemastered.Hallucinations
         public virtual void ChasePlayer()
         {
             TimerTick();
-            if (Vector3.Distance(((Component)this).transform.position, ((Component)LocalPlayer).transform.position) <= agentStoppingDistance)
+            if (Vector3.Distance(transform.position, LocalPlayer.transform.position) <= agentStoppingDistance)
             {
-                FinishHallucination(touched: true);
+                FinishHallucination(true);
             }
-            agent.SetDestination(((Component)LocalPlayer).transform.position);
+
+            agent.SetDestination(LocalPlayer.transform.position);
         }
 
         public virtual void PoolForLater()
         {
-            //IL_0014: Unknown result type (might be due to invalid IL or missing references)
-            ((Behaviour)agent).enabled = false;
-            ((Component)this).transform.position = Vector3.zero;
-            ((Component)this).gameObject.SetActive(false);
+            agent.enabled = false;
+            transform.position = Vector3.zero;
+            gameObject.SetActive(false);
         }
 
         private void LoadAINodes()
         {
+            /* not sure why this is commented out in the original code *edit: well its already done below. do we still need this method then?
+            if (LocalPlayer.isInsideFactory)
+            {
+                aiNodes = GameObject.FindGameObjectsWithTag("AINode");
+            }
+            else
+            {
+                aiNodes = GameObject.FindGameObjectsWithTag("OutsideAINode");
+            }
+            */
         }
 
         public virtual void Update()
         {
-            //IL_000d: Unknown result type (might be due to invalid IL or missing references)
-            if (LocalPlayer.HasLineOfSightToPosition(((Component)this).transform.position, 45f, 60, -1f))
+            if (LocalPlayer.HasLineOfSightToPosition(transform.position))
             {
                 if (notSeenYet)
                 {
                     LookAtHallucinationFirstTime();
                 }
-                // currently unimplemented
-                // LookingAtHallucination();
+                /// LookingAtHallucination(); /// currently unimplemented
                 PlayerPatcher.lookingAtModelHallucination = true;
             }
             else
@@ -166,54 +174,49 @@ namespace InsanityRemastered.Hallucinations
 
         public virtual void SetupVariables()
         {
-            if (!setup)
+            if (!isSetUp)
             {
                 aiNodes = GameObject.FindGameObjectsWithTag("AINode");
-                agent = ((Component)this).GetComponent<NavMeshAgent>();
-                hallucinationAnimator = ((Component)this).GetComponentInChildren<Animator>();
-                soundSource = ((Component)this).gameObject.AddComponent<AudioSource>();
+                agent = GetComponent<NavMeshAgent>();
+                hallucinationAnimator = GetComponentInChildren<Animator>();
+                soundSource = gameObject.AddComponent<AudioSource>();
                 soundSource.spatialBlend = 1f;
+
                 agent.angularSpeed = float.PositiveInfinity;
                 agent.speed = 3f;
                 agent.stoppingDistance = agentStoppingDistance;
-                setup = true;
                 agent.areaMask = StartOfRound.Instance.walkableSurfacesMask;
+
+                isSetUp = true;
             }
         }
 
         private Vector3 FindSpawnPosition()
         {
-            //IL_00b5: Unknown result type (might be due to invalid IL or missing references)
-            //IL_00ba: Unknown result type (might be due to invalid IL or missing references)
-            //IL_00bd: Unknown result type (might be due to invalid IL or missing references)
-            //IL_002a: Unknown result type (might be due to invalid IL or missing references)
-            //IL_003c: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0065: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0093: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0098: Unknown result type (might be due to invalid IL or missing references)
             if (hallucinationSpawnType == HallucinationSpawnType.NotLooking)
             {
                 for (int i = 0; i < aiNodes.Length; i++)
                 {
-                    if (!Physics.Linecast(((Component)LocalPlayer.gameplayCamera).transform.position, aiNodes[i].transform.position, StartOfRound.Instance.collidersAndRoomMaskAndDefault) && !LocalPlayer.HasLineOfSightToPosition(aiNodes[i].transform.position, 45f, 20, 8f))
+                    if (!Physics.Linecast(LocalPlayer.gameplayCamera.transform.position, aiNodes[i].transform.position, StartOfRound.Instance.collidersAndRoomMaskAndDefault) && !LocalPlayer.HasLineOfSightToPosition(aiNodes[i].transform.position, 45f, 20, 8f))
                     {
                         return aiNodes[i].transform.position;
                     }
                 }
             }
+
             return Vector3.zero;
         }
 
         private void OnEnable()
         {
-            if (!setup)
+            if (isSetUp)
             {
-                SetupVariables();
-                setup = true;
+                Spawn();
             }
             else
             {
-                Spawn();
+                SetupVariables();
+                isSetUp = true;
             }
         }
     }

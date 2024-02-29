@@ -11,14 +11,7 @@
 
         internal static void HeadLightUtilityUse(bool on)
         {
-            if (on)
-            {
-                nightVision = true;
-            }
-            else
-            {
-                nightVision = false;
-            }
+            nightVision = on;
         }
     }
 }

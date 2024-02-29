@@ -1,5 +1,5 @@
 ﻿using HarmonyLib;
-using InsanityRemastered;
+using InsanityRemastered.General;
 using System;
 using System.Reflection;
 
@@ -35,7 +35,7 @@ namespace InsanityRemastered.ModIntegration
                 {
                     if (types[i].Name == "SkinwalkerModPersistent")
                     {
-                        MethodInfo test = types[i].GetMethod(nameof(Update), BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
+                        MethodInfo test = types[i].GetMethod("Update", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy);
                         HarmonyMethod harmonyMethod = new(typeof(SkinwalkerModIntegration).GetMethod(nameof(SkinwalkerModIntegration.UpdateClips)));
                         harmony.Patch(test, harmonyMethod);
                     }

@@ -15,14 +15,7 @@ namespace InsanityRemastered.Patches
         [HarmonyPostfix]
         private static void OnUse(bool on)
         {
-            if (on)
-            {
-                PlayerPatcher.FlashlightOn = true;
-            }
-            else
-            {
-                PlayerPatcher.FlashlightOn = false;
-            }
+            PlayerPatcher.FlashlightOn = on;
         }
 
         [HarmonyPatch(typeof(GrabbableObject), nameof(GrabbableObject.EquipItem))]

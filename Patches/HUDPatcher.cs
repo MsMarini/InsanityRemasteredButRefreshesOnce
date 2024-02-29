@@ -1,9 +1,7 @@
 ﻿using BepInEx;
 using HarmonyLib;
 using InsanityRemastered.General;
-using InsanityRemastered.Patches;
 using InsanityRemastered.Utilities;
-using System;
 using UnityEngine;
 
 namespace InsanityRemastered.Patches
@@ -12,19 +10,19 @@ namespace InsanityRemastered.Patches
     internal class HUDPatcher
     {
         private static bool hudOn;
-
-        private static bool alreadyWarned;
+        private static bool wasWarned;
 
         private static void ResetWarningFacility(bool outside)
         {
             if (outside)
             {
-                alreadyWarned = false;
+                wasWarned = false;
             }
         }
 
         private static void ResetWarning()
         {
+
         }
 
         [HarmonyPatch(typeof(HUDManager), nameof(HUDManager.Awake))]
@@ -41,19 +39,23 @@ namespace InsanityRemastered.Patches
         [HarmonyPostfix]
         private static void _Update()
         {
-            if (UnityInput.Current.GetKeyDown((KeyCode)48))
+            if (UnityInput.Current.GetKeyDown(KeyCode.Alpha0))
             {
                 ToggleHUD();
             }
-            if (!alreadyWarned && PlayerPatcher.CurrentSanityLevel >= SanityLevel.Medium)
+
+            if (!wasWarned)
             {
-                HUDManager.Instance.DisplayTip("WARNING!", "Heartrate level is above normal. Please exercise caution.", true, false, "LC_Tip1");
-                alreadyWarned = true;
-            }
-            if (!alreadyWarned && PlayerPatcher.CurrentSanityLevel >= SanityLevel.High)
-            {
-                HUDManager.Instance.DisplayTip("WARNING!", "Heartrate is . Please exercise caution.", true, false, "LC_Tip1");
-                alreadyWarned = true;
+                if (PlayerPatcher.CurrentSanityLevel >= SanityLevel.High)
+                {
+                    HUDManager.Instance.DisplayTip("WARNING!", "Heartrate is . Please exercise caution.", true);
+                    wasWarned = true;
+                }
+                else if (PlayerPatcher.CurrentSanityLevel == SanityLevel.Medium)
+                {
+                    HUDManager.Instance.DisplayTip("WARNING!", "Heartrate level is above normal. Please exercise caution.", true);
+                    wasWarned = true;
+                }
             }
         }
 
@@ -64,16 +66,17 @@ namespace InsanityRemastered.Patches
 
         private static void ToggleHUD()
         {
-            if (!hudOn)
-            {
-                HUDManager.Instance.HideHUD(true);
-                hudOn = true;
-            }
-            else if (hudOn)
+            if (hudOn)
             {
                 HUDManager.Instance.HideHUD(false);
                 hudOn = false;
             }
+            else
+            {
+                HUDManager.Instance.HideHUD(true);
+                hudOn = true;
+            }
+            
         }
     }
 }

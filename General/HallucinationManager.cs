@@ -112,6 +112,23 @@ namespace InsanityRemastered.General
             {
                 AdjustPanic(true);
             }
+
+            /// |_ O G G E R
+            if (InsanityRemasteredLogger.UpdateLoggingEnabled && InsanityRemasteredLogger.logTimer < 10f)
+            {
+                InsanityRemasteredLogger.logTimer += Time.deltaTime;
+            }
+            else
+            {
+                InsanityRemasteredLogger.logTimer = 0f;
+
+                InsanityRemasteredLogger.LogVariables([LocalPlayer.insanitySpeedMultiplier, LocalPlayer.insanityLevel, panicAttackLevel, InsanityGameManager.Instance.LightsOff, PlayerPatcher.CurrentSanityLevel]);
+
+                // InsanityRemasteredLogger.Log("insanityLevel = " + LocalPlayer.insanityLevel);
+                // InsanityRemasteredLogger.Log("panicAttackLevel = " + panicAttackLevel);
+                // InsanityRemasteredLogger.Log("LightsOff = " + InsanityGameManager.Instance.LightsOff);
+                // InsanityRemasteredLogger.Log("CurrentSanityLevel = " + PlayerPatcher.CurrentSanityLevel);
+            }
         }
 
         public void AdjustPanic(bool reset = false)
@@ -133,7 +150,7 @@ namespace InsanityRemastered.General
                     SoundManager.Instance.SetDiageticMixerSnapshot(0, slowdownTimer / 6f);
                 }
             }
-            else if (LocalPlayer.insanityLevel >= LocalPlayer.maxInsanityLevel && !InsanityGameManager.Instance.IsNearLightSource)
+            else if (PlayerPatcher.CurrentSanityLevel >= SanityLevel.High && !InsanityGameManager.Instance.IsNearLightSource)
             {
                 panicAttackLevel = Mathf.MoveTowards(panicAttackLevel, 1f, slowdownTimer * Time.deltaTime);
                 if (InsanityRemasteredConfiguration.panicAttackFXEnabled)
@@ -142,14 +159,6 @@ namespace InsanityRemastered.General
                     SoundManager.Instance.SetDiageticMixerSnapshot(1, slowdownTimer);
                 }
             }
-
-            //|_
-            if (hallucinationRNGTimer == 0f)
-            {
-                InsanityRemasteredLogger.Log("panicAttackLevel = " + panicAttackLevel);
-                InsanityRemasteredLogger.Log("lightOff = " + InsanityGameManager.Instance.LightsOff);
-            }
-                
         }
 
         public void PanicAttackSymptom(bool canKill = false)
@@ -212,8 +221,11 @@ namespace InsanityRemastered.General
                 case HallucinationID.LightsOff:
                     HallucinateLightsOff();
                     break;
+                default:
+                    InsanityRemasteredLogger.LogWarning("No such hallucination with ID: " + id);
+                    break;
             }
-            /*
+            /* i disabled this because i dont want the recursive call
             if (hallucinations[id] >= EnumInsanity.Medium && UnityEngine.Random.Range(0f, 1f) < 0.1f)
             {
                 Hallucinate(GetRandomHallucination(id));
@@ -293,7 +305,7 @@ namespace InsanityRemastered.General
                 {
                     switch (randomTextIndex)
                     {
-                        case 0:
+                        case 1:
                         case 5:
                         HallucinatePlayerModel(InsanityGameManager.Instance.currentHallucinationModel);
                         break;

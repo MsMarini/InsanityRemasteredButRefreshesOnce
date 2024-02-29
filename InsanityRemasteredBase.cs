@@ -67,7 +67,7 @@ namespace InsanityRemastered
                     InsanitySoundManager.Instance.StopModSounds();
                     SanityModObject.hideFlags = HideFlags.HideAndDontSave;
                 }
-                else// if (!SanityModObject)
+                else
                 {
                     SetupModManager();
                     SanityModObject.hideFlags = HideFlags.HideAndDontSave;

@@ -5,8 +5,6 @@ namespace InsanityRemastered.General
 {
     internal class InsanityRemasteredConfiguration
     {
-        public static int insanityMaxPlayerAmountScaling { get; set; }
-
         public static string[] tipMessageTexts =
         [
             "I'm always watching.",
@@ -33,69 +31,52 @@ namespace InsanityRemastered.General
             "Biological anomaly detected.\nApproximate distance: 10 meters\nApproximate threat level: HIGH"
         ];
 
-        public static bool panicAttackDeathsEnabled { get; set; }
-
-        public static bool auditoryHallucinationsEnabled { get; set; }
-
-        public static bool modelHallucinationsEnabled { get; set; }
-
-        public static bool itemHallucinationsEnabled { get; set; }
-
-        public static bool lightsOffEventEnabled { get; set; }
-
-        public static bool panicAttacksEnabled { get; set; }
-
-        public static bool panicAttackFXEnabled { get; set; }
-
-        public static bool messageHallucinationsEnabled { get; set; }
-
-        public static bool customSFXEnabled { get; set; }
-
-        public static bool sanityRemindersEnabled { get; set; }
-
-        public static bool useExperimentalSkinwalkerVersion { get; set; }
-
-        public static float skinwalkerWalkiesFrequency { get; set; }
-
-        public static float sanityGainLightProximity { get; set; }
-
-        public static float sanityGainHearingWalkies { get; set; }
-
-        public static bool skinwalkerWalkiesEnabled { get; set; }
-
-        public static bool panicAttackDebuffsEnabled { get; set; }
-
-        public static float sanityLossNearPlayersReduction { get; set; }
-
         public static float SFXVolume
         {
             get => SFXVolume;
             set => SFXVolume = Math.Clamp(value, 0f, 1f);
         }
 
-        public static float hallucinationRNGMultiplier { get; set; }
+        public static bool panicAttacksEnabled { get; set; }
+        public static bool panicAttackDeathsEnabled { get; set; }
+        public static bool panicAttackFXEnabled { get; set; }
+        public static bool panicAttackDebuffsEnabled { get; set; }
+        public static bool sanityRemindersEnabled { get; set; }
 
+        public static int insanityMaxPlayerAmountScaling { get; set; }
         public static float insanitySoloScaling { get; set; }
 
+        public static float sanityLossNearPlayersReduction { get; set; }
         public static float sanityLossLightsOffEvent { get; set; }
-
         public static float sanityLossLookingAtModelHallucination { get; set; }
-
         public static float sanityLossPanicAttack { get; set; }
-
+        public static float sanityLossInsideFactory { get; set; }
         public static float sanityLossDarkOutside { get; set; }
 
+        public static float sanityGainLightProximity { get; set; }
+        public static float sanityGainHearingWalkies { get; set; }
+        public static float sanityGainFlashlight { get; set; }
+        public static float sanityGainInsideShip { get; set; }
         public static float sanityGainLightOutside { get; set; }
 
-        public static float sanityLossInsideFactory { get; set; }
+        public static float hallucinationRNGMultiplier { get; set; }
+        public static bool messageHallucinationsEnabled { get; set; }
+        public static bool itemHallucinationsEnabled { get; set; }
+        public static bool modelHallucinationsEnabled { get; set; }
+        public static bool lightsOffEventEnabled { get; set; }
+        public static bool auditoryHallucinationsEnabled { get; set; }
+        public static bool customSFXEnabled { get; set; }
+        public static bool skinwalkerWalkiesEnabled { get; set; }
+        public static float skinwalkerWalkiesFrequency { get; set; }
 
-        public static float sanityGainInsideShip { get; set; }
+        public static bool useThunderstoreFolderPath { get; set; }
+        public static bool useExperimentalSkinwalkerVersion { get; set; }
+        public static bool logDebugVariables { get; set; }
 
-        public static float sanityGainFlashlight { get; set; }
 
         public static void Initialize(ConfigFile Config)
         {
-            SFXVolume = Config.Bind("Volume", "Stinger/Drone volume", 0.25f, "Sets the volume of the stinger and drone sounds.\nValue Constraints: 0.0 - 1.0").Value;
+            SFXVolume = Config.Bind("Volume", "Stinger/Drone volume", 0.25f, "Sets the volume of the stinger and drone sounds.\nValue Constraints: 0.0 - 1.0").Value; /// this may not be correctly applied
 
             panicAttacksEnabled = Config.Bind("General", "Enable panic attacks", true, "Enables panic attacks.").Value;
             panicAttackDeathsEnabled = Config.Bind("General", "Enable deaths from panic attacks", false, "Enables the possibility to die when having a panic attack.").Value;
@@ -109,7 +90,7 @@ namespace InsanityRemastered.General
             sanityLossNearPlayersReduction = Config.Bind("Sanity Loss", "Reduction when near other players", 0.5f, "Multiplies the final sanity loss by this amount when near other players. Lower values reduce sanity loss.\nValue Constraints: 0.0 - 1.0").Value;
             sanityLossLightsOffEvent = Config.Bind("Sanity Loss", "Sanity loss during Lights Off event", 0.1f, "Sets the sanity loss during the Lights Off event.\nValue Constraints: 0.0 - 1.0").Value;
             sanityLossLookingAtModelHallucination = Config.Bind("Sanity Loss", "Sanity loss looking at a model hallucination", 0.1f, "Sets the sanity loss when looking at a model hallucination.\nValue Constraints: 0.0 - 1.0").Value;
-            sanityLossPanicAttack = Config.Bind("Sanity Loss", "Sanity loss during a panic attack", 1.0f, "Sets the sanity loss during a panic attack.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossPanicAttack = Config.Bind("Sanity Loss", "Sanity loss during a panic attack", 0.5f, "Sets the sanity loss during a panic attack.\nValue Constraints: 0.0 - 1.0").Value;
             sanityLossInsideFactory = Config.Bind("Sanity Loss", "Sanity loss inside the factory", 0.2f, "Sets the base sanity loss when you are inside the factory.\nValue Constraints: 0.0 - 1.0").Value;
             sanityLossDarkOutside = Config.Bind("Sanity Loss", "Sanity loss outside during nighttime", 0.1f, "Sets the base sanity loss when you are outside at night.\nValue Constraints: 0.0 - 1.0").Value;
 
@@ -124,13 +105,15 @@ namespace InsanityRemastered.General
             messageHallucinationsEnabled = Config.Bind("Hallucinations", "Enable message hallucinations", true, "Enables cryptic hallucination messages from the system.").Value;
             itemHallucinationsEnabled = Config.Bind("Hallucinations", "Enable item hallucinations", true, "Enables hallucinations of fake items.").Value;
             modelHallucinationsEnabled = Config.Bind("Hallucinations", "Enable model hallucinations", true, "Enables hallucinations of fake players or enemy models.").Value;
-            lightsOffEventEnabled = Config.Bind("Hallucinations", "Enable Lights Off event", false, "Enables a hallucination event in which the lights are shut off.").Value;
+            lightsOffEventEnabled = Config.Bind("Hallucinations", "Enable Lights Off event", true, "Enables a hallucination event in which the lights are shut off.").Value;
             auditoryHallucinationsEnabled = Config.Bind("Hallucinations", "Enable auditory hallucinations", true, "Enables auditory hallucinations.").Value;
             customSFXEnabled = Config.Bind("Misc", "Enable custom SFX", true, "Use custom sound effects for auditory hallucinations.").Value;
             skinwalkerWalkiesEnabled = Config.Bind("Hallucinations", "Enable skinwalker walkies", false, "Enables walkie talkies to play skinwalker clips.").Value;
             skinwalkerWalkiesFrequency = Config.Bind("Hallucinations", "Multiplier for skinwalker walkie frequency", 0.35f, "Enables walkie talkies to play skinwalker clips.\nValue Constraints: 0.1 - 1.0").Value;
 
+            useThunderstoreFolderPath = Config.Bind("Misc", "Use Thunderstore plugin path", true, "This uses the folder path for Thunderstore plugins to load the assets.").Value;
             useExperimentalSkinwalkerVersion = Config.Bind("Misc", "Use experimental skinwalker version", false, "Allows InsanityRemastered to load the experimental version of Skinwalker.").Value;
+            logDebugVariables = Config.Bind("Misc", "Log variables for debugging", false, "Logs variables intended for debugging and balancing.").Value;
         }
 
         public static void ValidateSettings()
