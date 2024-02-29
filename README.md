@@ -1,12 +1,12 @@
-# Insanity Remastered (WIP, currently fixing the decompiled code errors)
+# Insanity Remastered
 
-# This may be my one and only update. We'll see. I just wanted to fix the audio assets not loading, but I ended up doing a bit more.
+## This may be my one and only update. We'll see. I just wanted to fix the audio assets not loading, but I ended up doing a bit more.
 
 A mod for Lethal Company that adds more features to the insanity mechanic and tweaks a few things related to it.
 
 This is a client-sided mod as it would be odd if other players could see your hallucinations.
 
-Installation:
+Manual Installation:
 Drag InsanityRemastered.dll and the folder named "InsanityRemastered" into the BepInEx plugins folder.
 
 
@@ -83,8 +83,18 @@ Bug reports/compatibility issues should be reported in the Issues tab.
 
 ## Known Issues:
 
-The Lights Off feature may cause the lights to turn on again after you take the apparatus.
+-The Lights Off feature may cause the lights to turn on again after you take the apparatus.
 
-The Skinwalkers mod is not supported in my fork. I left the code, but it is disabled by default and will not be maintained as of now. I prefer Mirage anyway, but I don't know how to do most of the compatibility code.
+-The Skinwalkers mod is not supported in my fork. I left the code, but it is disabled by default and will not be maintained as of now. I prefer Mirage anyway, but I don't know how to do most of the compatibility code.
 
-This was made from decompiled code and by a newbie programmer.
+-IsHearingPlayersThroughWalkie may not be compatible with Advanced Company, and it may give sanity from hearing hallucinations from Skinwalker clips.
+
+-This was made from decompiled code and by a newbie programmer.
+
+
+### features to implement?:
+proximity/chased/looking at monsters increases insanity
+
+bug list:
+Turned off breaker -> took apparatus -> Lights Off hallucination -> left facility -> reentered facility -> lights were on!
+FlashlightOn method may be improved? (different method of detection)
