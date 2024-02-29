@@ -35,7 +35,7 @@ namespace InsanityRemastered.Patches
             InsanityRemasteredLogger.Log("PlayerControllerB = " + __instance); /// temporary
         }
 
-        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.Start))] //// woah there, i have no idea if this works
+        [HarmonyPatch(typeof(PlayerControllerB), "Start")] //// woah there, i have no idea if this works
         [HarmonyPostfix]
         private static void _Start(PlayerControllerB __instance)
         {
@@ -44,7 +44,7 @@ namespace InsanityRemastered.Patches
             InsanityRemasteredLogger.Log("PlayerControllerB = " + __instance); /// temporary
         }
 
-        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.SetPlayerSanityLevel))]
+        [HarmonyPatch(typeof(PlayerControllerB), "SetPlayerSanityLevel")]
         [HarmonyPrefix]
         private static bool PlayerInsanityPatch()
         {
@@ -128,7 +128,7 @@ namespace InsanityRemastered.Patches
             return false;
         }
 
-        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.Update))]
+        [HarmonyPatch(typeof(PlayerControllerB), "Update")]
         [HarmonyPostfix]
         private static void _Update()
         {
@@ -202,7 +202,7 @@ namespace InsanityRemastered.Patches
             }
         }
 
-        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.ActivateItem_performed))]
+        [HarmonyPatch(typeof(PlayerControllerB), "ActivateItem_performed")]
         [HarmonyPostfix]
         private static void _UseItem(PlayerControllerB __instance)
         {
@@ -215,7 +215,7 @@ namespace InsanityRemastered.Patches
             }
         }
 
-        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.Interact_performed))]
+        [HarmonyPatch(typeof(PlayerControllerB), "Interact_performed)")]
         [HarmonyPostfix]
         private static void InteractPatch(PlayerControllerB __instance)
         {

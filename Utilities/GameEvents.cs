@@ -59,7 +59,7 @@ namespace InsanityRemastered.Utilities
             OnGameEnd?.Invoke();
         }
 
-        [HarmonyPatch(typeof(StartOfRound), nameof(StartOfRound.OnShipLandedMiscEvents))]
+        [HarmonyPatch(typeof(StartOfRound), "OnShipLandedMiscEvents")]
         [HarmonyPostfix]
         private static void ShipLanded()
         {
@@ -80,7 +80,7 @@ namespace InsanityRemastered.Utilities
             OnPlayerLeave?.Invoke();
         }
 
-        [HarmonyPatch(typeof(PlayerControllerB), nameof(PlayerControllerB.SwitchToItemSlot))]
+        [HarmonyPatch(typeof(PlayerControllerB), "SwitchToItemSlot")]
         [HarmonyPostfix]
         private static void SwitchItem(ref GrabbableObject ___currentlyHeldObjectServer)
         {

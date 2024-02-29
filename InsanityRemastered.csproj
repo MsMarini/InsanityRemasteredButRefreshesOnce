@@ -8,20 +8,16 @@ Original by BudgetAirpods</Description>
 		<Version>1.2.0</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>latest</LangVersion>
-		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<RepositoryUrl>https://github.com/Toimis/InsanityRemastered</RepositoryUrl>
 		<Company>Epicool</Company>
 		<Title>Insanity Remastered</Title>
-		<PackageIcon>icon.png</PackageIcon>
 		<Copyright>MIT License</Copyright>
-		<PackageReadmeFile>README.md</PackageReadmeFile>
 	</PropertyGroup>
 
 	<ItemGroup>
 		<PackageReference Include="BepInEx.Analyzers" Version="1.*" PrivateAssets="all" />
 		<PackageReference Include="BepInEx.Core" Version="5.*" />
 		<PackageReference Include="BepInEx.PluginInfoProps" Version="1.*" />
-		<PackageReference Include="Unity" Version="5.11.10" />
 		<PackageReference Include="UnityEngine.Modules" Version="2022.3.9" IncludeAssets="compile" />
 	</ItemGroup>
 
@@ -40,18 +36,11 @@ Original by BudgetAirpods</Description>
 		<Reference Include="Unity.RenderPipelines.Core.Runtime">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
 		</Reference>
+		<Reference Include="UnityEngine">
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
+		</Reference>
 		<Reference Include="DissonanceVoip">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\DissonanceVoip.dll</HintPath>
 		</Reference>
-	</ItemGroup>
-	<ItemGroup>
-	  <None Update="README.md">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
-	  <None Update="Resources\icon.png">
-	    <Pack>True</Pack>
-	    <PackagePath>\</PackagePath>
-	  </None>
 	</ItemGroup>
 </Project>

@@ -25,7 +25,7 @@ namespace InsanityRemastered.Patches
 
         }
 
-        [HarmonyPatch(typeof(HUDManager), nameof(HUDManager.Awake))]
+        [HarmonyPatch(typeof(HUDManager), "Awake")]
         [HarmonyPostfix]
         private static void _Awake()
         {
@@ -35,7 +35,7 @@ namespace InsanityRemastered.Patches
             GameEvents.OnPlayerDied += ResetWarning;
         }
 
-        [HarmonyPatch(typeof(HUDManager), nameof(HUDManager.Update))]
+        [HarmonyPatch(typeof(HUDManager), "Update")]
         [HarmonyPostfix]
         private static void _Update()
         {
