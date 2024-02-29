@@ -1,6 +1,5 @@
 ﻿using InsanityRemastered.General;
 using InsanityRemastered.Patches;
-using System;
 using UnityEngine;
 
 namespace InsanityRemastered.Hallucinations
@@ -14,26 +13,25 @@ namespace InsanityRemastered.Hallucinations
             stayTimer -= Time.deltaTime;
             if (stayTimer <= 0f)
             {
-                ((Component)this).gameObject.SetActive(false);
+                gameObject.SetActive(false);
             }
         }
 
         private void Interaction()
         {
-            //IL_0021: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0027: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0048: Unknown result type (might be due to invalid IL or missing references)
-            float num = Random.Range(0, 1);
-            if (num <= 0.35f)
+            float action = Random.Range(0f, 1f);
+
+            if (action < 0.35f)
             {
-                PlayerPatcher.LocalPlayer.DropBlood(default(Vector3), true, false);
+                PlayerPatcher.LocalPlayer.DropBlood(); /// inflict damage, if it doesn't already
             }
-            else if (num <= 1E-05f)
+            else if (action < 0.001f)
             {
-                PlayerPatcher.LocalPlayer.KillPlayer(Vector3.zero, true, (CauseOfDeath)0, 0);
+                PlayerPatcher.LocalPlayer.KillPlayer(Vector3.zero);
             }
+
             InsanitySoundManager.Instance.PlayStinger();
-            ((Component)this).gameObject.SetActive(false);
+            gameObject.SetActive(false);
         }
 
         private void OnEnable()

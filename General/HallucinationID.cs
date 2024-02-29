@@ -4,16 +4,16 @@
     {
         public const string Observer = "Observer";
 
-        public const string CrypticStatusEffect = "CrypticStatus";
+        public const string CrypticStatus = "CrypticStatus";
 
-        public const string Auditory = "AuditoryHallucination";
+        public const string Auditory = "Auditory";
 
         public const string CrypticMessage = "CrypticMessage";
 
-        public const string FakeItem = "Fake Item";
+        public const string FakeItem = "FakeItem";
 
-        public const string FakePlayer = "Fake Player";
+        public const string FakePlayer = "FakePlayer";
 
-        public const string PowerLoss = "Power loss";
+        public const string LightsOff = "LightsOff";
     }
 }

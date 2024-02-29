@@ -16,7 +16,7 @@ namespace InsanityRemastered
             }
             if (UnityInput.Current.GetKeyDown("v"))
             {
-                HallucinationManager.Instance.Hallucinate("Power loss");
+                HallucinationManager.Instance.Hallucinate(HallucinationID.LightsOff);
             }
         }
 
@@ -24,7 +24,7 @@ namespace InsanityRemastered
         {
             HallucinationManager.Instance.PanicAttackLevel = 1f;
             PlayerPatcher.LocalPlayer.insanityLevel = 100f;
-            HallucinationManager.Instance.Hallucinate("Fake Player");
+            HallucinationManager.Instance.Hallucinate(HallucinationID.FakePlayer);
         }
 
         public static void SpawnItem(string itemName)
@@ -49,7 +49,7 @@ namespace InsanityRemastered
 
         public static void SpawnObserver()
         {
-            HallucinationManager.Instance.Hallucinate("Observer");
+            HallucinationManager.Instance.Hallucinate(HallucinationID.Observer);
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using BepInEx.Configuration;
-using System.Collections.Generic;
+using System;
 
 namespace InsanityRemastered.General
 {
@@ -7,9 +7,31 @@ namespace InsanityRemastered.General
     {
         public static int insanityMaxPlayerAmountScaling { get; set; }
 
-        public static List<string> hallucinationTipTexts = new List<string> { "I'm always watching.", "behind you.", "You will never make it out of here.", "Did you see that?", "The company will never be satisfied. This is all pointless.", "you are the only one alive." };
+        public static string[] tipMessageTexts =
+        [
+            "I'm always watching.",
+            "behind you.",
+            "Did you see that?",
 
-        public static List<string> statusEffectTexts = new List<string> { "WARNING:\n\nMultiple organ failures detected. Please lie down and hope it ends quickly.", "SYSTEM ERROR:\n\nLife support power is dropping. Please return to your ship immediately.", "Unknown lifeform detected nearby." };
+            "Time is running out.",
+            "You will never make it out of here.",
+            "you are the only one alive",
+            
+            "The company is just using you. This is all pointless.",
+            "You will regret that."
+        ];
+
+        public static string[] statusEffectTexts =
+        [
+            "WARNING:\n\nMultiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected.",
+            "WARNING:\n\nLife support systems compromised. Lie down and hope it ends quickly.",
+
+            "SYSTEM ERROR:\n\nSecurity breach detected. Avoid all other crew members.",
+            "SYSTEM ERROR:\n\nRadiation exposure approaching critical levels. Immediately discard all flashlights.",
+
+            "Unknown lifeform detected nearby.",
+            "Biological anomaly detected.\nApproximate distance: 10 meters\nApproximate threat level: HIGH"
+        ];
 
         public static bool panicAttackDeathsEnabled { get; set; }
 
@@ -48,10 +70,10 @@ namespace InsanityRemastered.General
         public static float SFXVolume
         {
             get => SFXVolume;
-            set => SFXVolume = Math.Clamp(value, 0, 1);
+            set => SFXVolume = Math.Clamp(value, 0f, 1f);
         }
 
-        public static float rngCheckTimerMultiplier { get; set; }
+        public static float hallucinationRNGMultiplier { get; set; }
 
         public static float insanitySoloScaling { get; set; }
 
@@ -98,7 +120,7 @@ namespace InsanityRemastered.General
             sanityGainLightOutside = Config.Bind("Sanity Gain", "Sanity gain outside during daytime", 0.16f, "Sets the base sanity gain when you are outside during day.\nValue Constraints: 0.0 - 1.0").Value;
 
 
-            rngCheckTimerMultiplier = Config.Bind("Hallucinations", "Multiplier for hallucination RNG check", 1.0f, "A multiplier that affects the frequency of hallucinations. Higher values reduce the frequency.\nValue Constraints: 0.1 - 4.0").Value;
+            hallucinationRNGMultiplier = Config.Bind("Hallucinations", "Multiplier for hallucination RNG check", 1.0f, "A multiplier that affects the frequency of hallucinations. Lower values increase the frequency.\nValue Constraints: 0.1 - 4.0").Value;
             messageHallucinationsEnabled = Config.Bind("Hallucinations", "Enable message hallucinations", true, "Enables cryptic hallucination messages from the system.").Value;
             itemHallucinationsEnabled = Config.Bind("Hallucinations", "Enable item hallucinations", true, "Enables hallucinations of fake items.").Value;
             modelHallucinationsEnabled = Config.Bind("Hallucinations", "Enable model hallucinations", true, "Enables hallucinations of fake players or enemy models.").Value;
@@ -121,9 +143,9 @@ namespace InsanityRemastered.General
             {
                 insanityMaxPlayerAmountScaling = 1;
             }
-            if (rngCheckTimerMultiplier <= 0f)
+            if (hallucinationRNGMultiplier <= 0f)
             {
-                rngCheckTimerMultiplier = 1f;
+                hallucinationRNGMultiplier = 1f;
             }
         }
     }

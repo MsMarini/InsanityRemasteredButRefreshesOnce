@@ -53,7 +53,7 @@ namespace InsanityRemastered.Hallucinations
             hallucinationAnimator.SetBool("Walking", false);
             agent.isStopped = true;
             Stare(((Component)base.LocalPlayer).transform.position);
-            if (SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreThereOtherPlayers && !spoken)
+            if (SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreOtherPlayersConnected && !spoken)
             {
                 soundSource.PlayOneShot(SkinwalkerModIntegration.GetRandomClip());
                 spoken = true;
@@ -238,19 +238,17 @@ namespace InsanityRemastered.Hallucinations
 
         public override void FinishHallucination(bool touched)
         {
-            //IL_003b: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0041: Unknown result type (might be due to invalid IL or missing references)
             if (touched)
             {
-                float num = Random.Range(0f, 1f);
-                if (num <= 0.15f)
+                float scareRNG = Random.Range(0f, 1f);
+                if (scareRNG < 0.15f)
                 {
-                    base.LocalPlayer.DamagePlayer(Random.Range(1, 5), false, true, (CauseOfDeath)6, 0, false, default(Vector3));
+                    LocalPlayer.DamagePlayer(Random.Range(1, 5), false, true, (CauseOfDeath)6, 0, false, default(Vector3));
                     return;
                 }
-                if (num <= 0.45f)
+                else if (scareRNG < 0.45f)
                 {
-                    HallucinationManager.Instance.PanicAttack = true;
+                    HallucinationManager.Instance.PanicAttackSymptom(true);
                 }
                 base.FinishHallucination(touched: true);
             }
@@ -280,14 +278,14 @@ namespace InsanityRemastered.Hallucinations
             seenPlayer = false;
             SetSuit(GetRandomPlayerSuitID());
             hallucinationType = HallucinationType.Staring;
-            if (PlayerPatcher.CurrentSanityLevel >= EnumInsanity.Medium)
+            if (PlayerPatcher.CurrentSanityLevel >= SanityLevel.Medium)
             {
                 GenerateWanderPoints();
                 hallucinationType = HallucinationType.Wandering;
             }
             float num = Random.Range(0f, 1f);
             float num2 = Random.Range(0f, 1f);
-            if (num >= 0.5f && SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreThereOtherPlayers)
+            if (num >= 0.5f && SkinwalkerModIntegration.IsInstalled && InsanityGameManager.AreOtherPlayersConnected)
             {
                 soundSource.clip = SkinwalkerModIntegration.GetRandomClip();
             }
@@ -297,7 +295,7 @@ namespace InsanityRemastered.Hallucinations
             }
             if (num2 > 0.25f)
             {
-                HUDManager.Instance.DisplayTip("", InsanityRemasteredConfiguration.hallucinationTipTexts[0], true, false, "LC_Tip1");
+                HUDManager.Instance.DisplayTip("", InsanityRemasteredConfiguration.tipMessageTexts[0], true, false, "LC_Tip1");
             }
             spoken = false;
             soundSource.Play();

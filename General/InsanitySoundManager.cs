@@ -8,23 +8,17 @@ namespace InsanityRemastered.General
     {
         public static InsanitySoundManager Instance;
 
-        public AudioClip[] hallucinationEffects;
-
+        public AudioClip[] hallucinationSFX;
         public AudioClip[] drones;
-
         public AudioClip[] playerHallucinationSounds;
-
         public AudioClip[] vanillaSFX;
-
         public AudioClip[] stingers;
-
         public AudioSource hallucinationSource;
-
         private AudioSource droneSource;
 
         private void Awake()
         {
-            if ((Object)(object)Instance == (Object)null)
+            if (Instance == null)
             {
                 Instance = this;
             }
@@ -32,9 +26,9 @@ namespace InsanityRemastered.General
 
         private void Start()
         {
-            hallucinationSource = ((Component)this).gameObject.AddComponent<AudioSource>();
+            hallucinationSource = gameObject.AddComponent<AudioSource>();
             hallucinationSource.spatialBlend = 0f;
-            droneSource = ((Component)this).gameObject.AddComponent<AudioSource>();
+            droneSource = gameObject.AddComponent<AudioSource>();
             droneSource.spatialBlend = 0f;
             droneSource.volume = InsanityRemasteredConfiguration.SFXVolume;
             CacheSFX();
@@ -42,31 +36,30 @@ namespace InsanityRemastered.General
 
         private void CacheSFX()
         {
-            stingers = InsanityRemasteredContent.Stingers;
             vanillaSFX = InsanityRemasteredContent.LCGameSFX;
+            stingers = InsanityRemasteredContent.Stingers;
             drones = InsanityRemasteredContent.Drones;
-            hallucinationEffects = InsanityRemasteredContent.AuditoryHallucinations;
+            hallucinationSFX = InsanityRemasteredContent.AuditoryHallucinations;
             playerHallucinationSounds = InsanityRemasteredContent.PlayerHallucinationSounds;
         }
 
         public AudioClip LoadFakePlayerSound()
         {
-            int num = Random.Range(0, playerHallucinationSounds.Length);
-            if (Object.op_Implicit((Object)(object)playerHallucinationSounds[num]) && ((Object)playerHallucinationSounds[num]).name != "JumpScare")
+            int randomClip = Random.Range(0, playerHallucinationSounds.Length);
+            if (playerHallucinationSounds[randomClip] && playerHallucinationSounds[randomClip].name != "JumpScare")
             {
-                return playerHallucinationSounds[num];
+                return playerHallucinationSounds[randomClip];
             }
             return null;
         }
 
         public void PlayJumpscare()
         {
-            AudioClip[] array = playerHallucinationSounds;
-            foreach (AudioClip val in array)
+            foreach (AudioClip clip in playerHallucinationSounds)
             {
-                if (((Object)val).name == "JumpScare")
+                if (clip.name == "JumpScare")
                 {
-                    hallucinationSource.clip = val;
+                    hallucinationSource.clip = clip;
                     hallucinationSource.Play();
                 }
             }
@@ -83,18 +76,13 @@ namespace InsanityRemastered.General
 
         public void PlayHallucinationSound()
         {
-            float num = UnityEngine.Random.Range(0f, 1f);
-            if (num >= 0.5f && SkinwalkerModIntegration.IsInstalled && StartOfRound.Instance.connectedPlayersAmount > 0)
+            if (SkinwalkerModIntegration.IsInstalled && StartOfRound.Instance.connectedPlayersAmount > 0 && Random.Range(0f, 1f) < 0.4f)
             {
                 SoundManager.Instance.PlaySoundAroundLocalPlayer(SkinwalkerModIntegration.GetRandomClip(), 2.5f);
             }
-            else if (InsanityRemasteredConfiguration.customSFXEnabled)
-            {
-                SoundManager.Instance.PlaySoundAroundLocalPlayer(LoadHallucinationSound(), 0.85f);
-            }
             else
             {
-                SoundManager.Instance.PlaySoundAroundLocalPlayer(vanillaSFX[UnityEngine.Random.Range(0, vanillaSFX.Length)], 1.4f);
+                SoundManager.Instance.PlaySoundAroundLocalPlayer(LoadHallucinationSound(), 0.9f);
             }
         }
 
@@ -120,21 +108,20 @@ namespace InsanityRemastered.General
 
         public AudioClip LoadHallucinationSound()
         {
-            float num = Random.Range(0f, 1f);
-            if (num <= 0.4f)
+            if (InsanityRemasteredConfiguration.customSFXEnabled && Random.Range(0f, 1f) < 0.6f)
             {
-                int num2 = Random.Range(0, vanillaSFX.Length);
-                if (Object.op_Implicit((Object)(object)vanillaSFX[num2]))
+                int randomClip = Random.Range(0, hallucinationSFX.Length);
+                if (hallucinationSFX[randomClip])
                 {
-                    return vanillaSFX[num2];
+                    return hallucinationSFX[randomClip];
                 }
             }
             else
             {
-                int num3 = Random.Range(0, hallucinationEffects.Length);
-                if (Object.op_Implicit((Object)(object)hallucinationEffects[num3]))
+                int randomClip = Random.Range(0, vanillaSFX.Length);
+                if (vanillaSFX[randomClip])
                 {
-                    return hallucinationEffects[num3];
+                    return vanillaSFX[randomClip];
                 }
             }
             return null;
@@ -142,20 +129,20 @@ namespace InsanityRemastered.General
 
         private AudioClip LoadStingerSound()
         {
-            int num = Random.Range(0, stingers.Length);
-            if (Object.op_Implicit((Object)(object)stingers[num]))
+            int randomClip = Random.Range(0, stingers.Length);
+            if (stingers[randomClip])
             {
-                return stingers[num];
+                return stingers[randomClip];
             }
             return null;
         }
 
         private AudioClip LoadDroneSound()
         {
-            int num = Random.Range(0, drones.Length);
-            if (Object.op_Implicit((Object)(object)drones[num]))
+            int randomClip = Random.Range(0, drones.Length);
+            if (drones[randomClip])
             {
-                return drones[num];
+                return drones[randomClip];
             }
             return null;
         }

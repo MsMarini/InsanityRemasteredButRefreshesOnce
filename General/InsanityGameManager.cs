@@ -17,43 +17,33 @@ namespace InsanityRemastered.General
     {
         public static InsanityGameManager Instance;
 
-        private List<Light> bunkerLights = new List<Light>();
-
+        private List<Light> bunkerLights = [];
+        private float deletionTimer;
+        private float deletionFrequency = 10f;
         public GameObject currentHallucinationModel;
 
-        private float deletionTimer;
-
-        private float deletionFrequency = 10f;
-
         private PlayerControllerB LocalPlayer => GameNetworkManager.Instance.localPlayerController;
-
         public static DungeonFlow MapFlow => RoundManager.Instance.dungeonGenerator.Generator.DungeonFlow;
-
-        public static bool AreThereOtherPlayers => StartOfRound.Instance.connectedPlayersAmount > 0;
-
-        public bool IsNearPlayers => NearOtherPlayers();
-
+        public static bool AreOtherPlayersConnected => StartOfRound.Instance.connectedPlayersAmount > 0;
+        public bool IsNearOtherPlayers => NearOtherPlayers();
         public bool IsNearLightSource => NearLightSource();
-
         public bool IsHearingPlayersThroughWalkie => PlayerIsHearingOthersThroughWalkieTalkie();
-
         public bool IsTalking => PlayerTalking();
-
+        
         public bool LightsOff { get; private set; }
-
         public List<Light> BunkerLights => bunkerLights;
 
         private void Awake()
         {
-            if ((Object)(object)Instance == (Object)null)
+            if (Instance == null)
             {
                 Instance = this;
             }
             GameEvents.OnGameEnd += OnRoundEnd;
             GameEvents.OnShipLanded += GameEvents_OnShipLanded;
             GameEvents.OnPlayerDied += GameEvents_OnPlayerDied;
-            GameEvents.OnEnterOrLeaveFacility += OnEnterOrLeaveFacility;
-            HallucinationManager.OnPowerHallucination += PowerHallucination;
+            GameEvents.OnEnterOrLeaveFacility += OnEnterOrLeaveFacility; /// something about all the references/etc. seem redundant, but idk
+            HallucinationManager.OnPowerHallucination += PowerHallucination; /// something about all the references/etc. seem redundant, but idk
             SceneManager.sceneLoaded += SceneLoaded;
         }
 
@@ -73,7 +63,8 @@ namespace InsanityRemastered.General
                     SkinwalkerModIntegration.ClearRecordings();
                 }
             }
-            if (GameNetworkManager.Instance.gameHasStarted && RoundManager.Instance.powerOffPermanently)
+
+            if (RoundManager.Instance.powerOffPermanently && GameNetworkManager.Instance.gameHasStarted) /// may need to update LightsOff on round start/end
             {
                 LightsOff = true;
             }
@@ -81,33 +72,27 @@ namespace InsanityRemastered.General
 
         private void PowerHallucination(bool on)
         {
-            if (on)
-            {
-                LightsOff = false;
-            }
-            else if (!on)
-            {
-                LightsOff = true;
-            }
+            LightsOff = !on;
         }
 
-        private void SceneLoaded(Scene scene, LoadSceneMode arg1)
+        private void SceneLoaded(Scene scene, LoadSceneMode arg1) /// might be able to simplify this if i knew more about scenes
         {
-            if (((Scene)(ref scene)).name == SceneNames.SampleSceneRelay.ToString())
+            if (scene.name == SceneNames.SampleSceneRelay.ToString())
             {
                 SavePlayerModel();
-                ((Behaviour)HallucinationManager.Instance).enabled = true;
+                HallucinationManager.Instance.enabled = true;
             }
-            else if (((Scene)(ref scene)).name == SceneNames.MainMenu.ToString() || ((Scene)(ref scene)).name == SceneNames.InitSceneLaunchOptions.ToString())
+            else if (scene.name == SceneNames.MainMenu.ToString() || scene.name == SceneNames.InitSceneLaunchOptions.ToString())
             {
-                ((Behaviour)HallucinationManager.Instance).enabled = false;
+                HallucinationManager.Instance.enabled = false;
             }
         }
 
         private void GameEvents_OnPlayerDied()
         {
             InsanitySoundManager.Instance.StopModSounds();
-            HallucinationManager.Instance.ResetPanicValues();
+            HallucinationManager.Instance.AdjustPanic(true);
+            HallucinationManager.Instance.ResetLightsOff();
         }
 
         private void OnRoundEnd()
@@ -118,17 +103,9 @@ namespace InsanityRemastered.General
 
         private void OnEnterOrLeaveFacility(bool outside)
         {
-            if (outside && Instance.LightsOff)
+            if (outside)
             {
-                ResetLights();
-            }
-        }
-
-        public void ResetLights()
-        {
-            if (LightsOff)
-            {
-                HallucinationManager.Instance.Hallucinate("Power loss");
+                HallucinationManager.Instance.ResetLightsOff();
             }
         }
 
@@ -166,19 +143,17 @@ namespace InsanityRemastered.General
 
         private bool PlayerTalking()
         {
-            VoicePlayerState val = StartOfRound.Instance.voiceChatModule.FindPlayer(StartOfRound.Instance.voiceChatModule.LocalPlayerName);
-            float num = Mathf.Clamp(val.Amplitude, 0f, 1f);
-            return val.IsSpeaking && num > 0.85f;
+            VoicePlayerState voiceState = StartOfRound.Instance.voiceChatModule.FindPlayer(StartOfRound.Instance.voiceChatModule.LocalPlayerName);
+            float volume = Mathf.Clamp(voiceState.Amplitude, 0f, 1f);
+            return voiceState.IsSpeaking && volume > 0.85f;
         }
 
-        private bool NearLightSource(float checkRadius = 10f)
+        private bool NearLightSource(float checkRadius = 10f) /// this seems intensive, but also like the only option?
         {
-            //IL_001b: Unknown result type (might be due to invalid IL or missing references)
-            //IL_002b: Unknown result type (might be due to invalid IL or missing references)
             for (int i = 0; i < RoundManager.Instance.allPoweredLights.Count; i++)
             {
-                float num = Vector3.Distance(((Component)RoundManager.Instance.allPoweredLights[i]).transform.position, ((Component)LocalPlayer).transform.position);
-                if (num < checkRadius && RoundManager.Instance.allPoweredLightsAnimators[i].GetBool("on"))
+                float lightDistance = Vector3.Distance(RoundManager.Instance.allPoweredLights[i].transform.position, LocalPlayer.transform.position);
+                if (lightDistance < checkRadius && RoundManager.Instance.allPoweredLightsAnimators[i].GetBool("on"))
                 {
                     return true;
                 }
@@ -188,54 +163,49 @@ namespace InsanityRemastered.General
 
         private void SavePlayerModel()
         {
-            //IL_0029: Unknown result type (might be due to invalid IL or missing references)
-            //IL_002f: Expected O, but got Unknown
-            //IL_00be: Unknown result type (might be due to invalid IL or missing references)
-            //IL_00c5: Expected O, but got Unknown
-            GameObject val = Object.Instantiate<GameObject>(GameObject.Find("ScavengerModel"));
-            foreach (Transform item in val.transform)
+            GameObject model = Instantiate(GameObject.Find("ScavengerModel"));
+
+            foreach (Transform child in model.transform)
             {
-                Transform val2 = item;
-                if (((Object)val2).name == "LOD2" || ((Object)val2).name == "LOD3")
+                if (child.name == "LOD2" || child.name == "LOD3")
                 {
-                    ((Component)val2).gameObject.SetActive(false);
+                    child.gameObject.SetActive(false);
                 }
-                if (((Object)val2).name == "LOD1")
+                if (child.name == "LOD1")
                 {
-                    ((Component)val2).gameObject.SetActive(true);
+                    child.gameObject.SetActive(true);
                 }
-                if (!(((Object)val2).name == "metarig"))
+                if (child.name == "metarig")
                 {
-                    continue;
-                }
-                foreach (Transform item2 in ((Component)val2).transform)
-                {
-                    Transform val3 = item2;
-                    if (((Object)val3).name == "ScavengerModelArmsOnly")
+                    foreach (Transform _child in child.transform)
                     {
-                        ((Component)val3).gameObject.SetActive(false);
-                    }
-                    if (((Object)val3).name == "CameraContainer")
-                    {
-                        ((Component)val3).gameObject.SetActive(false);
+                        if (_child.name == "ScavengerModelArmsOnly")
+                        {
+                            _child.gameObject.SetActive(false);
+                        }
+                        if (_child.name == "CameraContainer")
+                        {
+                            _child.gameObject.SetActive(false);
+                        }
                     }
                 }
             }
-            val.SetActive(false);
-            val.AddComponent<PlayerHallucination>();
-            val.AddComponent<NavMeshAgent>();
-            val.GetComponent<LODGroup>().enabled = false;
-            currentHallucinationModel = val;
+
+            model.SetActive(false);
+            model.AddComponent<PlayerHallucination>();
+            model.AddComponent<NavMeshAgent>();
+            model.GetComponent<LODGroup>().enabled = false;
+            currentHallucinationModel = model;
         }
 
         private void CacheLights()
         {
             BunkerLights.Clear();
-            foreach (Light allPoweredLight in RoundManager.Instance.allPoweredLights)
+            foreach (Light light in RoundManager.Instance.allPoweredLights)
             {
-                if (!bunkerLights.Contains(allPoweredLight))
+                if (!bunkerLights.Contains(light))
                 {
-                    bunkerLights.Add(allPoweredLight);
+                    bunkerLights.Add(light);
                 }
             }
         }

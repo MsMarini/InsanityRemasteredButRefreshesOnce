@@ -45,12 +45,12 @@ namespace InsanityRemastered.Patches
             {
                 ToggleHUD();
             }
-            if (!alreadyWarned && PlayerPatcher.CurrentSanityLevel >= EnumInsanity.Medium)
+            if (!alreadyWarned && PlayerPatcher.CurrentSanityLevel >= SanityLevel.Medium)
             {
                 HUDManager.Instance.DisplayTip("WARNING!", "Heartrate level is above normal. Please exercise caution.", true, false, "LC_Tip1");
                 alreadyWarned = true;
             }
-            if (!alreadyWarned && PlayerPatcher.CurrentSanityLevel >= EnumInsanity.High)
+            if (!alreadyWarned && PlayerPatcher.CurrentSanityLevel >= SanityLevel.High)
             {
                 HUDManager.Instance.DisplayTip("WARNING!", "Heartrate is . Please exercise caution.", true, false, "LC_Tip1");
                 alreadyWarned = true;

@@ -75,35 +75,25 @@ namespace InsanityRemastered.Hallucinations
         public virtual void LookAtHallucinationFirstTime()
         {
             notSeenYet = false;
-            LocalPlayer.JumpToFearLevel(0.4f, true);
+            LocalPlayer.JumpToFearLevel(0.4f);
         }
 
         public virtual void FinishHallucination(bool touched)
         {
             if (touched)
             {
-                float scareRNG = UnityEngine.Random.Range(0f, 1f);
-                if (scareRNG < 0.4f)
+                LocalPlayer.JumpToFearLevel(1f, true);
+                
+                if (UnityEngine.Random.Range(0f, 1f) < 0.4f)
                 {
                     InsanitySoundManager.Instance.PlayJumpscare();
                 }
-                LocalPlayer.JumpToFearLevel(1f, true);
             }
             else
             {
-                LocalPlayer.insanityLevel -= 5;
+                LocalPlayer.insanityLevel = Mathf.Max(LocalPlayer.insanityLevel - 5f, 0f);
             }
-            /*///
-            possible implementation, if the checks are necessary
-            else if (LocalPlayer.insanityLevel > 5)
-            {
-                LocalPlayer.insanityLevel -= 5;
-            }
-            else
-            {
-                LocalPlayer.insanityLevel = 0;
-            }
-            */
+            
             OnHallucinationEnded?.Invoke(touched);
             PoolForLater();
         }
@@ -112,13 +102,14 @@ namespace InsanityRemastered.Hallucinations
         {
             if (!wanderSpot)
             {
-                agent.SetDestination(RoundManager.Instance.GetRandomNavMeshPositionInRadius(aiNodes[Random.Range(0, aiNodes.Length)].transform.position, 12f, default(NavMeshHit)));
+                agent.SetDestination(RoundManager.Instance.GetRandomNavMeshPositionInRadius(aiNodes[UnityEngine.Random.Range(0, aiNodes.Length)].transform.position, 12f));
                 wanderSpot = true;
             }
-            if (Vector3.Distance(((Component)this).transform.position, agent.destination) <= agentStoppingDistance && wanderSpot)
+
+            if (Vector3.Distance(transform.position, agent.destination) <= agentStoppingDistance)
             {
                 PoolForLater();
-                InsanityRemastered_AI.OnHallucinationEnded?.Invoke(obj: false);
+                OnHallucinationEnded?.Invoke(false);
             }
         }
 
@@ -128,15 +119,12 @@ namespace InsanityRemastered.Hallucinations
             if (durationTimer > duration)
             {
                 durationTimer = 0f;
-                FinishHallucination(touched: false);
+                FinishHallucination(false);
             }
         }
 
         public virtual void ChasePlayer()
         {
-            //IL_000e: Unknown result type (might be due to invalid IL or missing references)
-            //IL_001e: Unknown result type (might be due to invalid IL or missing references)
-            //IL_0052: Unknown result type (might be due to invalid IL or missing references)
             TimerTick();
             if (Vector3.Distance(((Component)this).transform.position, ((Component)LocalPlayer).transform.position) <= agentStoppingDistance)
             {

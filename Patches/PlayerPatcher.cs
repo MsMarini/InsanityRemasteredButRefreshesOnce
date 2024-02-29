@@ -12,11 +12,9 @@ namespace InsanityRemastered.Patches
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerPatcher
     {
-        public static EnumInsanity CurrentSanityLevel;
+        public static SanityLevel CurrentSanityLevel;
 
         public static int PlayersConnected;
-
-        public static float InsanityLevel;
 
         public static PlayerControllerB LocalPlayer => GameNetworkManager.Instance.localPlayerController;
 
@@ -28,7 +26,7 @@ namespace InsanityRemastered.Patches
 
         public static event Action OnInteractWithFakeItem;
 
-        [HarmonyPatch("Awake")] // am i able to use a non-hardcoded string here?
+        [HarmonyPatch("Awake")] /// am i able to use a non-hardcoded string here?
         [HarmonyPostfix]
         private static void _Awake(ref PlayerControllerB __instance)
         {
@@ -40,10 +38,9 @@ namespace InsanityRemastered.Patches
         [HarmonyPrefix]
         private static bool PlayerInsanityPatch()
         {
-            if (GameNetworkManager.Instance.gameHasStarted)
+            if (GameNetworkManager.Instance.gameHasStarted) /// add check for IsPlayerDead?
             {
                 // idk maybe start of day stuff
-                InsanityLevel = LocalPlayer.insanityLevel;
                 if (StartOfRound.Instance.inShipPhase || !TimeOfDay.Instance.currentDayTimeStarted)
                 {
                     LocalPlayer.insanityLevel = 0f;
@@ -73,7 +70,7 @@ namespace InsanityRemastered.Patches
                 {
                     LocalPlayer.insanitySpeedMultiplier *= (float)Math.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125);
 
-                    if (InsanityGameManager.Instance.IsNearPlayers)
+                    if (InsanityGameManager.Instance.IsNearOtherPlayers)
                         LocalPlayer.isPlayerAlone = false;
                     else
                         LocalPlayer.isPlayerAlone = true;
@@ -99,12 +96,19 @@ namespace InsanityRemastered.Patches
                     LocalPlayer.insanitySpeedMultiplier += InsanityRemasteredConfiguration.sanityLossPanicAttack;
 
                 // final calculation
-                if (LocalPlayer.insanitySpeedMultiplier < 0f) // insanity is being gained
+                if (LocalPlayer.insanitySpeedMultiplier < 0f) // insanity is being lost
                 {
                     LocalPlayer.insanityLevel = Mathf.MoveTowards(LocalPlayer.insanityLevel, 0f, Time.deltaTime * -LocalPlayer.insanitySpeedMultiplier);
                     return false;
                 }
-                else if (LocalPlayer.insanityLevel < LocalPlayer.maxInsanityLevel) // insanity is being lost
+                else if (LocalPlayer.insanityLevel > LocalPlayer.maxInsanityLevel) // insanity is over the max and being lost
+                {
+                    LocalPlayer.insanityLevel = Mathf.MoveTowards(LocalPlayer.insanityLevel, LocalPlayer.maxInsanityLevel, Time.deltaTime * 2f);
+                    return false;
+
+                    
+                }
+                else // insanity is being gained
                 {
                     if (!LocalPlayer.isPlayerAlone)
                         LocalPlayer.insanitySpeedMultiplier *= InsanityRemasteredConfiguration.sanityLossNearPlayersReduction;
@@ -112,11 +116,6 @@ namespace InsanityRemastered.Patches
                         LocalPlayer.insanitySpeedMultiplier *= InsanityRemasteredConfiguration.insanitySoloScaling;
 
                     LocalPlayer.insanityLevel = Mathf.MoveTowards(LocalPlayer.insanityLevel, LocalPlayer.maxInsanityLevel, Time.deltaTime * LocalPlayer.insanitySpeedMultiplier);
-                    return false;
-                }
-                else // insanity is over the max
-                {
-                    LocalPlayer.insanityLevel = Mathf.MoveTowards(LocalPlayer.insanityLevel, LocalPlayer.maxInsanityLevel, Time.deltaTime * 2f);
                     return false;
                 }
             }
@@ -132,26 +131,26 @@ namespace InsanityRemastered.Patches
             if (GameNetworkManager.Instance.gameHasStarted && LocalPlayer.isPlayerControlled && !LocalPlayer.isPlayerDead)
             {
                 UpdateStatusEffects();
-                if (HallucinationManager.Instance.PanicAttackLevel >= 1f)
+                if (HallucinationManager.Instance.PanicAttackLevel == 1f)
                 {
-                    CurrentSanityLevel = EnumInsanity.Max;
+                    CurrentSanityLevel = SanityLevel.Max;
                 }
                 else if (LocalPlayer.insanityLevel >= 100f)
                 {
-                    CurrentSanityLevel = EnumInsanity.High;
+                    CurrentSanityLevel = SanityLevel.High;
                 }
                 else if (LocalPlayer.insanityLevel >= 50f)
                 {
-                    CurrentSanityLevel = EnumInsanity.Medium;
+                    CurrentSanityLevel = SanityLevel.Medium;
                 }
                 else
                 {
-                    CurrentSanityLevel = EnumInsanity.Low;
+                    CurrentSanityLevel = SanityLevel.Low;
                 }
             }
         }
 
-        private static void UpdateStatusEffects() // is this compatible with other mods that affect movespeed, like advanced company? or is walk/crouch speed constant even with those?
+        private static void UpdateStatusEffects() /// is this compatible with other mods that affect movespeed, like advanced company? or is walk/crouch speed constant even with those?
         {
             if (HallucinationManager.slowness)
             {
@@ -188,11 +187,11 @@ namespace InsanityRemastered.Patches
             }
         }
 
-        private static void OnHeardHallucinationSound() // what is this used for?
+        private static void OnHeardHallucinationSound() /// what is this used for?
         {
-            if (CurrentSanityLevel >= EnumInsanity.Medium)
+            if (CurrentSanityLevel >= SanityLevel.Medium)
             {
-                LocalPlayer.insanityLevel += 5f;
+                LocalPlayer.insanityLevel += 2.5f;
             }
         }
 
@@ -205,7 +204,7 @@ namespace InsanityRemastered.Patches
                 LocalPlayer.ItemSlots[LocalPlayer.currentItemSlot].DestroyObjectInHand(LocalPlayer);
                 holdingPills = false;
                 LocalPlayer.insanityLevel = 0f;
-                SoundManager.Instance.SetDiageticMixerSnapshot(0, 1f);
+                HallucinationManager.Instance.AdjustPanic(true);
             }
         }
 

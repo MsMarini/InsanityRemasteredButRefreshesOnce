@@ -33,7 +33,7 @@ namespace InsanityRemastered.Utilities
 
         [HarmonyPatch(typeof(EntranceTeleport), nameof(EntranceTeleport.TeleportPlayer))]
         [HarmonyPrefix]
-        private static void OnEnterLeaveFacility(EntranceTeleport __instance)
+        private static void OnEnterLeaveFacility(EntranceTeleport __instance) /// THIS MAY NOT WORK WITH TELEPORTERS
         {
             OnEnterOrLeaveFacility?.Invoke(__instance.isEntranceToBuilding);
         }
