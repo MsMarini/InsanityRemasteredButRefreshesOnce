@@ -1,4 +1,4 @@
-﻿public enum SanityLevel
+﻿public enum InsanityLevel
 {
     Low,
     Medium,

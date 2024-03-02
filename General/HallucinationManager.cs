@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using System.Reflection;
 
 namespace InsanityRemastered.General
 {
@@ -16,37 +15,37 @@ namespace InsanityRemastered.General
         private float droneRNGTimer;
         private float droneRNGFrequency = 60f;
         private float hallucinationRNGTimer;
-        private float hallucinationRNGFrequency = 40f;
+        private float hallucinationRNGFrequency = 30f;
         private float slowdownTimer = 120f;
         private float panicAttackLevel;
 
         public static bool slowness;
         public static bool reduceVision;
 
-        private readonly Dictionary<string, SanityLevel> hallucinations = new()
+        private readonly Dictionary<string, InsanityLevel> hallucinations = new()
         {
             {
-                HallucinationID.Auditory, SanityLevel.Low
+                HallucinationID.Auditory, InsanityLevel.Low
             },
             {
-                HallucinationID.CrypticStatus, SanityLevel.Low
+                HallucinationID.CrypticStatus, InsanityLevel.Low
             },
             {
-                HallucinationID.CrypticMessage, SanityLevel.Low
+                HallucinationID.CrypticMessage, InsanityLevel.Low
             },
             {
-                HallucinationID.FakePlayer, SanityLevel.Low
+                HallucinationID.FakePlayer, InsanityLevel.Low
             },
             {
-                HallucinationID.FakeItem, SanityLevel.Medium
+                HallucinationID.FakeItem, InsanityLevel.Medium
             },
             {
-                HallucinationID.LightsOff, SanityLevel.High
+                HallucinationID.LightsOff, InsanityLevel.High
             }
         };
         // properties backed by unowned private fields
         private PlayerControllerB LocalPlayer => GameNetworkManager.Instance.localPlayerController;
-        private SanityLevel SanityLevel => PlayerPatcher.CurrentSanityLevel;
+        private InsanityLevel SanityLevel => PlayerPatcher.CurrentInsanityLevel;
         // properties backed by owned private fields
         public float PanicAttackLevel
         {
@@ -54,7 +53,7 @@ namespace InsanityRemastered.General
             set => panicAttackLevel = value;
         }
         public float EffectTransition => slowdownTimer;
-        public Dictionary<string, SanityLevel> Hallucinations => hallucinations;
+        public Dictionary<string, InsanityLevel> Hallucinations => hallucinations;
         // actions
         public static event Action<bool> OnPowerHallucination;
         public static event Action OnPlayerHallucinationStarted;
@@ -78,25 +77,37 @@ namespace InsanityRemastered.General
         {
             if (!LocalPlayer.isPlayerDead && LocalPlayer.isPlayerControlled && LocalPlayer.isInsideFactory)
             {
-                hallucinationRNGTimer += Time.deltaTime;
+                if (LocalPlayer.insanityLevel > 25f)
+                {
+                    hallucinationRNGTimer += Time.deltaTime * LocalPlayer.insanityLevel * 0.02f;
+                }
+                else if (LocalPlayer.insanityLevel > 10f)
+                {
+                    hallucinationRNGTimer += Time.deltaTime * LocalPlayer.insanityLevel * 0.06f;
+                }
+
                 if (hallucinationRNGTimer > hallucinationRNGFrequency)
                 {
                     hallucinationRNGTimer = 0f;
-                    if (0.45f > UnityEngine.Random.Range(0f, 1f))
+
+                    if (InsanityRemasteredConfiguration.logDebugVariables)
+                        InsanityRemasteredLogger.LogError("hallucinationRNGTimer = 0f");
+
+                    if (UnityEngine.Random.Range(0f, 1f) < 0.4f)
                     {
                         Hallucinate(GetRandomHallucination());
                     }
                 }
-                if (LocalPlayer.insanityLevel >= LocalPlayer.maxInsanityLevel)
+                if (PlayerPatcher.CurrentInsanityLevel >= InsanityLevel.High)
                 {
                     droneRNGTimer += Time.deltaTime;
                     if (droneRNGTimer > droneRNGFrequency)
                     {
                         droneRNGTimer = 0f;
-                        if (0.45f > UnityEngine.Random.Range(0f, 1f))
+                        if (UnityEngine.Random.Range(0f, 1f) < 0.4f)
                         {
                             InsanitySoundManager.Instance.PlayDrone();
-                            if (InsanityRemasteredConfiguration.panicAttackFXEnabled && panicAttackLevel == 1f)
+                            if (InsanityRemasteredConfiguration.panicAttackFXEnabled && panicAttackLevel > 0.9f)
                             {
                                 PanicAttackSymptom();
                             }
@@ -115,40 +126,54 @@ namespace InsanityRemastered.General
             }
 
             /// |_ O G G E R
-            if (InsanityRemasteredLogger.UpdateLoggingEnabled && InsanityRemasteredLogger.logTimer < 10f)
+            if (InsanityRemasteredConfiguration.logDebugVariables)
             {
-                InsanityRemasteredLogger.logTimer += Time.deltaTime;
-            }
-            else
-            {
-                InsanityRemasteredLogger.logTimer = 0f;
+                if (InsanityRemasteredLogger.logTimer < 10f)
+                {
+                    InsanityRemasteredLogger.logTimer += Time.deltaTime;
+                }
+                else
+                {
+                    InsanityRemasteredLogger.logTimer = 0f;
 
-                InsanityRemasteredLogger.LogVariables([
-                    LocalPlayer.insanitySpeedMultiplier,
-                    LocalPlayer.insanityLevel,
-                    panicAttackLevel,
-                    InsanityGameManager.Instance.LightsOff,
-                    PlayerPatcher.CurrentSanityLevel,
-                    Assembly.GetExecutingAssembly(),
-                    Assembly.GetExecutingAssembly().GetName().Name,
-                    Assembly.GetExecutingAssembly().GetName().Version
+                    InsanityRemasteredLogger.LogVariables
+                    ([
+                        nameof(LocalPlayer.insanitySpeedMultiplier),
+                        nameof(LocalPlayer.insanityLevel),
+                        nameof(panicAttackLevel),
+                        nameof(PlayerPatcher.CurrentInsanityLevel),
+                        nameof(GameNetworkManager.Instance.gameHasStarted),
+                        nameof(InsanityRemasteredConfiguration.panicAttacksEnabled),
+                        nameof(LocalPlayer.isInsideFactory),
+                        nameof(LocalPlayer.isPlayerAlone),
+                        nameof(InsanityGameManager.Instance.IsNearLightSource),
+                    ],
+                    [
+                        LocalPlayer.insanitySpeedMultiplier,
+                        LocalPlayer.insanityLevel,
+                        panicAttackLevel,
+                        PlayerPatcher.CurrentInsanityLevel,
+                        GameNetworkManager.Instance.gameHasStarted,
+                        InsanityRemasteredConfiguration.panicAttacksEnabled,
+                        LocalPlayer.isInsideFactory,
+                        LocalPlayer.isPlayerAlone,
+                        InsanityGameManager.Instance.IsNearLightSource,
                     ]);
-
-                // InsanityRemasteredLogger.Log("insanityLevel = " + LocalPlayer.insanityLevel);
-                // InsanityRemasteredLogger.Log("panicAttackLevel = " + panicAttackLevel);
-                // InsanityRemasteredLogger.Log("LightsOff = " + InsanityGameManager.Instance.LightsOff);
-                // InsanityRemasteredLogger.Log("CurrentSanityLevel = " + PlayerPatcher.CurrentSanityLevel);
+                }
             }
         }
 
         public void AdjustPanic(bool reset = false)
         {
-            if (reset || panicAttackLevel == 0f)
+            if (!InsanityRemasteredConfiguration.panicAttacksEnabled)
+            {
+                return;
+            }
+
+            if (reset)
             {
                 panicAttackLevel = 0f;
                 SoundManager.Instance.SetDiageticMixerSnapshot(0, 1f);
-                slowness = false;
-                reduceVision = false;
                 OnSanityRecovered?.Invoke();
             }
             else if (!LocalPlayer.isInsideFactory || !LocalPlayer.isPlayerAlone)
@@ -160,7 +185,7 @@ namespace InsanityRemastered.General
                     SoundManager.Instance.SetDiageticMixerSnapshot(0, slowdownTimer / 6f);
                 }
             }
-            else if (PlayerPatcher.CurrentSanityLevel >= SanityLevel.High && !InsanityGameManager.Instance.IsNearLightSource)
+            else if (PlayerPatcher.CurrentInsanityLevel >= InsanityLevel.High && !InsanityGameManager.Instance.IsNearLightSource)
             {
                 panicAttackLevel = Mathf.MoveTowards(panicAttackLevel, 1f, slowdownTimer * Time.deltaTime);
                 if (InsanityRemasteredConfiguration.panicAttackFXEnabled)
@@ -169,12 +194,25 @@ namespace InsanityRemastered.General
                     SoundManager.Instance.SetDiageticMixerSnapshot(1, slowdownTimer);
                 }
             }
+
+            if (panicAttackLevel == 0f)
+            {
+                slowness = false;
+                reduceVision = false;
+            }
         }
 
         public void PanicAttackSymptom(bool canKill = false)
         {
-            LocalPlayer.JumpToFearLevel(0.5f, true);
-            panicAttackLevel = Mathf.Min(panicAttackLevel + 0.05f, 1f);
+            LocalPlayer.JumpToFearLevel(0.6f, true);
+
+            if (!InsanityRemasteredConfiguration.panicAttacksEnabled)
+            {
+                return;
+            }
+
+            InsanityRemasteredLogger.Log("Applying panic attack symptom.");
+            panicAttackLevel = Mathf.Min(panicAttackLevel + 0.1f, 1f);
 
             if (InsanityRemasteredConfiguration.panicAttackDebuffsEnabled)
             {
@@ -203,6 +241,7 @@ namespace InsanityRemastered.General
                         break;
                 }
             }
+
             HUDManager.Instance.DisplayTip("WARNING!", "Heartrate is at dangerous levels. Please seek help immediately.", true); /// this could be a set of strings in another class?
             OnExperiencePanicAttack?.Invoke();
         }
@@ -236,7 +275,7 @@ namespace InsanityRemastered.General
                     break;
             }
             /* i disabled this because i dont want the recursive call
-            if (hallucinations[id] >= EnumInsanity.Medium && UnityEngine.Random.Range(0f, 1f) < 0.1f)
+            if (hallucinations[id] >= InsanityLevel.Medium && UnityEngine.Random.Range(0f, 1f) < 0.1f)
             {
                 Hallucinate(GetRandomHallucination(id));
             }
@@ -245,7 +284,7 @@ namespace InsanityRemastered.General
 
         public string GetRandomHallucination() /// make it so that disabled hallucinations are not included
         {
-            KeyValuePair<string, SanityLevel> randomHallucination;
+            KeyValuePair<string, InsanityLevel> randomHallucination;
 
             do
             {
@@ -258,7 +297,7 @@ namespace InsanityRemastered.General
 
         public string GetRandomHallucination(string excludedHallucination)
         {
-            KeyValuePair<string, SanityLevel> randomHallucination;
+            KeyValuePair<string, InsanityLevel> randomHallucination;
 
             do
             {
@@ -278,7 +317,7 @@ namespace InsanityRemastered.General
 
                 HUDManager.Instance.DisplayStatusEffect(randomText);
 
-                if (UnityEngine.Random.Range(0f, 100f) < 20f + LocalPlayer.insanityLevel)
+                if (UnityEngine.Random.Range(0f, 100f) < 20f + LocalPlayer.insanityLevel / 2)
                 {
                     switch (randomTextIndex)
                     {
@@ -288,10 +327,10 @@ namespace InsanityRemastered.General
                         break;
                         case 2:
                         case 4:
-                        HallucinatePlayerModel(InsanityGameManager.Instance.currentHallucinationModel);
+                        Hallucinate(HallucinationID.FakePlayer);
                         break;
                         case 3:
-                        HallucinateLightsOff();
+                        Hallucinate(HallucinationID.LightsOff);
                         break;
                     }
                 }
@@ -311,19 +350,19 @@ namespace InsanityRemastered.General
                 
                 ///Invoke(nameof(HallucinateLightsOff), 3f); Invoke could be useful, but how does it work with method parameters?
 
-                if (UnityEngine.Random.Range(0f, 100f) < 10f + (LocalPlayer.insanityLevel / 2))
+                if (UnityEngine.Random.Range(0f, 100f) < 10f + (LocalPlayer.insanityLevel / 4))
                 {
                     switch (randomTextIndex)
                     {
                         case 1:
                         case 5:
-                        HallucinatePlayerModel(InsanityGameManager.Instance.currentHallucinationModel);
+                        Hallucinate(HallucinationID.FakePlayer);
                         break;
                         case 6:
-                        HallucinateFakeItem();
+                        Hallucinate(HallucinationID.FakeItem);
                         break;
                         case 7:
-                        HallucinateSound();
+                        Hallucinate(HallucinationID.Auditory);
                         break;
                     }
                 }
@@ -336,19 +375,19 @@ namespace InsanityRemastered.General
             {
                 if (reset && InsanityGameManager.Instance.LightsOff)
                 {
-                    foreach (Animator light in RoundManager.Instance.allPoweredLightsAnimators) //// check out `public IEnumerator turnOnLights(bool turnOn)` and `public void FlickerLights(bool flickerFlashlights = false, bool disableFlashlights = false)`
+                    foreach (Animator light in InsanityGameManager.Instance.BunkerLightsAnimators) //// check out `public IEnumerator turnOnLights(bool turnOn)` and `public void FlickerLights(bool flickerFlashlights = false, bool disableFlashlights = false)`
                     {
                         light.SetBool("on", true);
                     }
                     OnPowerHallucination?.Invoke(true);
                 }
-                else
+                else if (!reset && !InsanityGameManager.Instance.LightsOff)
                 {
-                    foreach (Animator light in RoundManager.Instance.allPoweredLightsAnimators)
+                    foreach (Animator light in InsanityGameManager.Instance.BunkerLightsAnimators)
                     {
                         light.SetBool("on", false);
                     }
-                    PlayerPatcher.LocalPlayer.JumpToFearLevel(0.3f);
+                    PlayerPatcher.LocalPlayer.JumpToFearLevel(0.4f);
                     OnPowerHallucination?.Invoke(false);
                 }
             }

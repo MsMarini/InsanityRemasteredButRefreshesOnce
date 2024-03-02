@@ -46,12 +46,12 @@ namespace InsanityRemastered.Patches
 
             if (!wasWarned)
             {
-                if (PlayerPatcher.CurrentSanityLevel >= SanityLevel.High)
+                if (PlayerPatcher.CurrentInsanityLevel >= InsanityLevel.High)
                 {
                     HUDManager.Instance.DisplayTip("WARNING!", "Heartrate is . Please exercise caution.", true);
                     wasWarned = true;
                 }
-                else if (PlayerPatcher.CurrentSanityLevel == SanityLevel.Medium)
+                else if (PlayerPatcher.CurrentInsanityLevel == InsanityLevel.Medium)
                 {
                     HUDManager.Instance.DisplayTip("WARNING!", "Heartrate level is above normal. Please exercise caution.", true);
                     wasWarned = true;

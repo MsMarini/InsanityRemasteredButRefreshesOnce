@@ -1,5 +1,6 @@
 ﻿using BepInEx.Logging;
 using InsanityRemastered.General;
+using System;
 
 namespace InsanityRemastered
 {
@@ -7,13 +8,11 @@ namespace InsanityRemastered
     {
         internal static ManualLogSource logSource;
 
-        public static bool UpdateLoggingEnabled {private set; get;}
         public static float logTimer;
 
         public static void Initialize(string modGUID)
         {
             logSource = Logger.CreateLogSource(modGUID);
-            UpdateLoggingEnabled = InsanityRemasteredConfiguration.logDebugVariables; /// go to hallucinationmanager's Update to find where this is used
         }
 
         public static void Log(object message)
@@ -31,13 +30,18 @@ namespace InsanityRemastered
             logSource.LogWarning(message);
         }
 
-        public static void LogVariables(object[] variables)
+        public static void LogVariables(string[] variableNames, object[] variables)
         {
-            foreach (var item in variables)
+            if (variableNames.Length != variables.Length)
             {
-                string value = (item != null) ? item.ToString() : "null";
+                throw new ArgumentException("The number of variable names and variables must match.");
+            }
 
-                logSource.LogMessage($"{nameof(item)}: {value}");
+            for (int i = 0; i < variables.Length; i++)
+            {
+                string value = (variables[i] != null) ? variables[i].ToString() : "null";
+
+                logSource.LogMessage($"{variableNames[i]}: {value}");
             }
         }
     }

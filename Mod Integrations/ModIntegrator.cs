@@ -15,6 +15,7 @@ namespace InsanityRemastered.ModIntegration
                 InsanityRemasteredLogger.Log("Skinwalker mod installed, starting integration.");
                 Harmony harmony = new("skinwalker");
                 Type[] types = assembly.GetTypes();
+
                 for (int i = 0; i < types.Length; i++)
                 {
                     if (types[i].Name == "AudioAggregator")
@@ -31,6 +32,7 @@ namespace InsanityRemastered.ModIntegration
                 InsanityRemasteredLogger.Log("Skinwalker mod installed, starting integration.");
                 Harmony harmony = new("skinwalker");
                 Type[] types = assembly.GetTypes();
+
                 for (int i = 0; i < types.Length; i++)
                 {
                     if (types[i].Name == "SkinwalkerModPersistent")
@@ -41,13 +43,14 @@ namespace InsanityRemastered.ModIntegration
                     }
                 }
             }
-
+            
             if (assembly.FullName.StartsWith("AdvancedCompany"))
             {
-                InsanityRemasteredLogger.Log("AdvancedCompany mod installed, starting integration.");
+                InsanityRemasteredLogger.LogError("AdvancedCompany mod installed, starting integration.");
 
-                Harmony harmony = new("advancecompany "); /// is this typo important?
+                Harmony harmony = new("AdvancedCompany"); /// was the old typo important?
                 Type[] types = assembly.GetTypes();
+
                 for (int i = 0; i < types.Length; i++)
                 {
                     if (types[i].Name == "NightVision" && types[i].Namespace == "AdvancedCompany.Objects")

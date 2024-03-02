@@ -209,7 +209,8 @@ namespace InsanityRemastered.Hallucinations
                 float scareRNG = Random.Range(0f, 1f);
                 if (scareRNG < 0.2f)
                 {
-                    LocalPlayer.DamagePlayer(Random.Range(1, 5), false, causeOfDeath: CauseOfDeath.Suffocation); /// can this actually kill?
+                    LocalPlayer.DamagePlayer(Random.Range(2, 16), false, causeOfDeath: CauseOfDeath.Suffocation); /// can this actually kill?
+                    PlayerPatcher.LocalPlayer.DropBlood();
                     return;
                 }
                 else if (scareRNG < 0.5f)
@@ -252,7 +253,7 @@ namespace InsanityRemastered.Hallucinations
             SetSuit(GetRandomPlayerSuitID());
             hallucinationType = HallucinationType.Staring;
 
-            if (PlayerPatcher.CurrentSanityLevel >= SanityLevel.Medium)
+            if (PlayerPatcher.CurrentInsanityLevel >= InsanityLevel.Medium)
             {
                 GenerateWanderPoints();
                 hallucinationType = HallucinationType.Wandering;

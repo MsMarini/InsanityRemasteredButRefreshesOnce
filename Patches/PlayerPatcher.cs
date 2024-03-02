@@ -12,7 +12,7 @@ namespace InsanityRemastered.Patches
     [HarmonyPatch(typeof(PlayerControllerB))]
     internal class PlayerPatcher
     {
-        public static SanityLevel CurrentSanityLevel;
+        public static InsanityLevel CurrentInsanityLevel;
 
         public static int PlayersConnected;
 
@@ -32,7 +32,6 @@ namespace InsanityRemastered.Patches
         {
             InsanityRemasteredAI.OnHallucinationEnded += LoseSanity;
             GameEvents.OnItemSwitch += OnItemSwitch;
-            InsanityRemasteredLogger.Log("PlayerControllerB = " + __instance); /// temporary
         }
 
         [HarmonyPatch(typeof(PlayerControllerB), "Start")] //// woah there, i have no idea if this works
@@ -40,8 +39,6 @@ namespace InsanityRemastered.Patches
         private static void _Start(PlayerControllerB __instance)
         {
             __instance.maxInsanityLevel = 100f;
-            InsanityRemasteredLogger.Log("Player controller patched.\nmaxInsanityLevel = " + __instance.maxInsanityLevel);
-            InsanityRemasteredLogger.Log("PlayerControllerB = " + __instance); /// temporary
         }
 
         [HarmonyPatch(typeof(PlayerControllerB), "SetPlayerSanityLevel")]
@@ -55,6 +52,15 @@ namespace InsanityRemastered.Patches
                 {
                     LocalPlayer.insanityLevel = 0f;
                     return false;
+                }
+
+                if (PlayersConnected > 1)
+                {
+                    LocalPlayer.isPlayerAlone = !InsanityGameManager.Instance.IsNearOtherPlayers;
+                }
+                else
+                {
+                    LocalPlayer.isPlayerAlone = false;
                 }
 
                 // calculate sanity gain/loss
@@ -76,19 +82,17 @@ namespace InsanityRemastered.Patches
                     LocalPlayer.insanitySpeedMultiplier = -InsanityRemasteredConfiguration.sanityGainLightOutside;
                 }
 
-                if (PlayersConnected > 1)
+                if (LocalPlayer.insanitySpeedMultiplier > 0f)
                 {
-                    LocalPlayer.isPlayerAlone = !InsanityGameManager.Instance.IsNearOtherPlayers;
+                    if (InsanityGameManager.Instance.IsNearLightSource)
+                        LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainLightProximity;
+
+                    if (InsanityGameManager.Instance.IsHearingPlayersThroughWalkie && LocalPlayer.isPlayerAlone)
+                        LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainHearingWalkies;
+
+                    if (FlashlightOn || AdvancedCompanyCompatibility.nightVision)
+                        LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainFlashlight;
                 }
-
-                if (InsanityGameManager.Instance.IsNearLightSource)
-                    LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainLightProximity;
-
-                if (InsanityGameManager.Instance.IsHearingPlayersThroughWalkie && LocalPlayer.isPlayerAlone)
-                    LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainHearingWalkies;
-
-                if (FlashlightOn || AdvancedCompanyCompatibility.nightVision)
-                    LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainFlashlight;
 
                 if (InsanityGameManager.Instance.LightsOff)
                     LocalPlayer.insanitySpeedMultiplier += InsanityRemasteredConfiguration.sanityLossLightsOffEvent;
@@ -116,10 +120,10 @@ namespace InsanityRemastered.Patches
                 {
                     if (PlayersConnected == 1)
                         LocalPlayer.insanitySpeedMultiplier *= InsanityRemasteredConfiguration.insanitySoloScaling;
-                    else if (!LocalPlayer.isPlayerAlone)
-                        LocalPlayer.insanitySpeedMultiplier *= (float)Math.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125) * InsanityRemasteredConfiguration.sanityLossNearPlayersReduction;
+                    else if (LocalPlayer.isPlayerAlone)
+                        LocalPlayer.insanitySpeedMultiplier *= Mathf.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125f);
                     else
-                        LocalPlayer.insanitySpeedMultiplier *= (float)Math.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125);
+                        LocalPlayer.insanitySpeedMultiplier *= Mathf.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125f) * InsanityRemasteredConfiguration.sanityLossNearPlayersReduction;
 
                     LocalPlayer.insanityLevel = Mathf.MoveTowards(LocalPlayer.insanityLevel, LocalPlayer.maxInsanityLevel, Time.deltaTime * LocalPlayer.insanitySpeedMultiplier);
                     return false;
@@ -133,26 +137,26 @@ namespace InsanityRemastered.Patches
         private static void _Update()
         {
             PlayersConnected = StartOfRound.Instance.connectedPlayersAmount + 1;
-            PlayersConnected = Mathf.Clamp(PlayersConnected, 1, InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling);
+            PlayersConnected = Math.Clamp(PlayersConnected, 1, InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling);
             
             if (GameNetworkManager.Instance.gameHasStarted && LocalPlayer.isPlayerControlled && !LocalPlayer.isPlayerDead)
             {
                 UpdateStatusEffects();
                 if (HallucinationManager.Instance.PanicAttackLevel > 0.9f)
                 {
-                    CurrentSanityLevel = SanityLevel.Max;
+                    CurrentInsanityLevel = InsanityLevel.Max;
                 }
-                else if (LocalPlayer.insanityLevel > 99f)
+                else if (LocalPlayer.insanityLevel > 90f)
                 {
-                    CurrentSanityLevel = SanityLevel.High;
+                    CurrentInsanityLevel = InsanityLevel.High;
                 }
-                else if (LocalPlayer.insanityLevel > 49f)
+                else if (LocalPlayer.insanityLevel > 45f)
                 {
-                    CurrentSanityLevel = SanityLevel.Medium;
+                    CurrentInsanityLevel = InsanityLevel.Medium;
                 }
                 else
                 {
-                    CurrentSanityLevel = SanityLevel.Low;
+                    CurrentInsanityLevel = InsanityLevel.Low;
                 }
             }
         }
@@ -190,13 +194,13 @@ namespace InsanityRemastered.Patches
             if (touched)
             {
                 LocalPlayer.insanityLevel += 15f;
-                LocalPlayer.JumpToFearLevel(1f, true);
+                LocalPlayer.JumpToFearLevel(1f);
             }
         }
 
         private static void OnHeardHallucinationSound() /// what is this used for?
         {
-            if (CurrentSanityLevel >= SanityLevel.Medium)
+            if (CurrentInsanityLevel >= InsanityLevel.Medium)
             {
                 LocalPlayer.insanityLevel += 2.5f;
             }
@@ -215,7 +219,7 @@ namespace InsanityRemastered.Patches
             }
         }
 
-        [HarmonyPatch(typeof(PlayerControllerB), "Interact_performed)")]
+        [HarmonyPatch(typeof(PlayerControllerB), "Interact_performed")]
         [HarmonyPostfix]
         private static void InteractPatch(PlayerControllerB __instance)
         {
@@ -226,10 +230,10 @@ namespace InsanityRemastered.Patches
                 return;
             }
 
-            FakeItem fakeItem = hit.collider.transform.gameObject.GetComponent<FakeItem>();
-
-            if (fakeItem)
+            // check if null reference
+            if (hit.collider.transform.gameObject.GetComponent<FakeItem>())
             {
+                //is there a reason for these 2 lines not being in the event?
                 LocalPlayer.insanityLevel += 13f;
                 LocalPlayer.JumpToFearLevel(0.4f, true);
                 OnInteractWithFakeItem?.Invoke();

@@ -21,9 +21,13 @@ namespace InsanityRemastered.Hallucinations
         {
             float action = Random.Range(0f, 1f);
 
-            if (action < 0.35f)
+            if (action < 0.7f)
             {
-                // GameNetworkManager.Instance.localPlayerController.DamagePlayer(Random.Range(2, 8), true);  /// inflict damage, if it doesn't already
+                HUDManager.Instance.DisplayTip("", InsanityRemasteredConfiguration.tipMessageTexts[7], true);
+            }
+            if (action < 0.4f)
+            {
+                GameNetworkManager.Instance.localPlayerController.DamagePlayer(Random.Range(1, 8), false);  /// inflict damage, if it doesn't already
                 PlayerPatcher.LocalPlayer.DropBlood();
             }
             else if (action < 0.001f)

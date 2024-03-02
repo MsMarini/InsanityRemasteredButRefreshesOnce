@@ -9,7 +9,7 @@ namespace InsanityRemastered.General
         [
             "I'm always watching.",
             "behind you.",
-            "Did you see that?",
+            "did you see that?",
 
             "Time is running out.",
             "You will never make it out of here.",
@@ -21,21 +21,17 @@ namespace InsanityRemastered.General
 
         public static string[] statusEffectTexts =
         [
-            "WARNING:\n\nMultiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected.",
-            "WARNING:\n\nLife support systems compromised. Lie down and hope it ends quickly.",
+            "WARNING:\n\nMultiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected. Multiple organ failures detected.",
+            "WARNING:\n\nLife support systems compromised.\nLie down and hope it ends quickly.",
 
-            "SYSTEM ERROR:\n\nSecurity breach detected. Avoid all other crew members.",
-            "SYSTEM ERROR:\n\nRadiation exposure approaching critical levels. Immediately discard all flashlights.",
+            "SYSTEM ERROR: SECURITY BREACH.\n\nAvoid all other crew members.",
+            "SYSTEM ERROR: CRITICAL RADIATION EXPOSURE.\n\nImmediately discard all flashlights.",
 
             "Unknown lifeform detected nearby.",
-            "Biological anomaly detected.\nApproximate distance: 10 meters\nApproximate threat level: HIGH"
+            "Biological anomaly detected."
         ];
 
-        public static float SFXVolume
-        {
-            get => SFXVolume;
-            set => SFXVolume = Math.Clamp(value, 0f, 1f);
-        }
+        public static float SFXVolume { get; set; }
 
         public static bool panicAttacksEnabled { get; set; }
         public static bool panicAttackDeathsEnabled { get; set; }
@@ -76,7 +72,7 @@ namespace InsanityRemastered.General
 
         public static void Initialize(ConfigFile Config)
         {
-            SFXVolume = Config.Bind("Volume", "Stinger/Drone volume", 0.25f, "Sets the volume of the stinger and drone sounds.\nValue Constraints: 0.0 - 1.0").Value; /// this may not be correctly applied
+            SFXVolume = Config.Bind("Volume", "Stinger/drone volume", 0.5f, "Sets the volume of the stinger and drone sounds.\nValue Constraints: 0.0 - 1.0").Value; /// this may not be correctly applied
 
             panicAttacksEnabled = Config.Bind("General", "Enable panic attacks", true, "Enables panic attacks.").Value;
             panicAttackDeathsEnabled = Config.Bind("General", "Enable deaths from panic attacks", false, "Enables the possibility to die when having a panic attack.").Value;
@@ -85,21 +81,20 @@ namespace InsanityRemastered.General
             sanityRemindersEnabled = Config.Bind("General", "Enable sanity level notifications", true, "Enables notifications as your insanity begins to increase.").Value;
 
             insanityMaxPlayerAmountScaling = Config.Bind("Scaling", "Max player count for sanity loss scaling", 4, "Sets the max amount of players to take into account when scaling sanity loss.\nValue Constraints: 1 - 16").Value;
-            insanitySoloScaling = Config.Bind("Scaling", "Solo insanity speed scaling", 0.75f, "Sets the scaling of insanity gain when playing solo. \nValue Constraints: 0.0 - 1.0").Value;
+            insanitySoloScaling = Config.Bind("Scaling", "Solo sanity scaling", 0.67f, "Sets the scaling of sanity loss when playing solo. \nValue Constraints: 0.1 - 1.0").Value;
 
-            sanityLossNearPlayersReduction = Config.Bind("Sanity Loss", "Reduction when near other players", 0.5f, "Multiplies the final sanity loss by this amount when near other players. Lower values reduce sanity loss.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossNearPlayersReduction = Config.Bind("Sanity Loss", "Reduction when near other players", 0.5f, "Multiplies the final sanity loss by this amount when near other players. Lower values reduce sanity loss.\nValue Constraints: 0.1 - 1.0").Value;
             sanityLossLightsOffEvent = Config.Bind("Sanity Loss", "Sanity loss during Lights Off event", 0.1f, "Sets the sanity loss during the Lights Off event.\nValue Constraints: 0.0 - 1.0").Value;
-            sanityLossLookingAtModelHallucination = Config.Bind("Sanity Loss", "Sanity loss looking at a model hallucination", 0.1f, "Sets the sanity loss when looking at a model hallucination.\nValue Constraints: 0.0 - 1.0").Value;
-            sanityLossPanicAttack = Config.Bind("Sanity Loss", "Sanity loss during a panic attack", 0.5f, "Sets the sanity loss during a panic attack.\nValue Constraints: 0.0 - 1.0").Value;
-            sanityLossInsideFactory = Config.Bind("Sanity Loss", "Sanity loss inside the factory", 0.2f, "Sets the base sanity loss when you are inside the factory.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossLookingAtModelHallucination = Config.Bind("Sanity Loss", "Sanity loss looking at a model hallucination", 0.15f, "Sets the sanity loss when looking at a model hallucination.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossPanicAttack = Config.Bind("Sanity Loss", "Sanity loss during a panic attack", 0.3f, "Sets the sanity loss during a panic attack.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityLossInsideFactory = Config.Bind("Sanity Loss", "Sanity loss inside the factory", 0.3f, "Sets the base sanity loss when you are inside the factory.\nValue Constraints: 0.0 - 1.0").Value;
             sanityLossDarkOutside = Config.Bind("Sanity Loss", "Sanity loss outside during nighttime", 0.1f, "Sets the base sanity loss when you are outside at night.\nValue Constraints: 0.0 - 1.0").Value;
 
-            sanityGainLightProximity = Config.Bind("Sanity Gain", "Sanity gain near light", 0.04f, "Sets the sanity gain when near a light source.\nValue Constraints: 0.0 - 1.0").Value;
-            sanityGainHearingWalkies = Config.Bind("Sanity Gain", "Sanity gain hearing walkies", 0.04f, "Sets the sanity gain when hearing other players through walkie talkies.\nValue Constraints: 0.0 - 1.0").Value;
-            sanityGainFlashlight = Config.Bind("Sanity Gain", "Sanity gain with active flashlight", 0.08f, "Sets the sanity gain with an active flashlight.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityGainLightProximity = Config.Bind("Sanity Gain", "Sanity gain near light", 0.05f, "Sets the sanity gain when near a light source.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityGainHearingWalkies = Config.Bind("Sanity Gain", "Sanity gain hearing walkies", 0.05f, "Sets the sanity gain when hearing other players through walkie talkies.\nValue Constraints: 0.0 - 1.0").Value;
+            sanityGainFlashlight = Config.Bind("Sanity Gain", "Sanity gain with active flashlight", 0.1f, "Sets the sanity gain with an active flashlight.\nValue Constraints: 0.0 - 1.0").Value;
             sanityGainInsideShip = Config.Bind("Sanity Gain", "Sanity gain inside ship", 0.32f, "Sets the base sanity gain when inside the ship.\nValue Constraints: 0.0 - 1.0").Value;
             sanityGainLightOutside = Config.Bind("Sanity Gain", "Sanity gain outside during daytime", 0.16f, "Sets the base sanity gain when you are outside during day.\nValue Constraints: 0.0 - 1.0").Value;
-
 
             hallucinationRNGMultiplier = Config.Bind("Hallucinations", "Multiplier for hallucination RNG check", 1.0f, "A multiplier that affects the frequency of hallucinations. Lower values increase the frequency.\nValue Constraints: 0.1 - 4.0").Value;
             messageHallucinationsEnabled = Config.Bind("Hallucinations", "Enable message hallucinations", true, "Enables cryptic hallucination messages from the system.").Value;
@@ -116,20 +111,28 @@ namespace InsanityRemastered.General
             logDebugVariables = Config.Bind("Misc", "Log variables for debugging", false, "Logs variables intended for debugging and balancing.").Value;
         }
 
-        public static void ValidateSettings() /// double check this later
+        public static void ValidateSettings()
         {
-            if (SFXVolume > 1f)
-            {
-                SFXVolume = 1f;
-            }
-            if (insanityMaxPlayerAmountScaling <= 0)
-            {
-                insanityMaxPlayerAmountScaling = 1;
-            }
-            if (hallucinationRNGMultiplier <= 0f)
-            {
-                hallucinationRNGMultiplier = 1f;
-            }
+            SFXVolume = Math.Clamp(SFXVolume, 0f, 1f);
+
+            insanityMaxPlayerAmountScaling = Math.Clamp(insanityMaxPlayerAmountScaling, 1, 16);
+            insanitySoloScaling = Math.Clamp(insanitySoloScaling, 0.1f, 1f);
+
+            sanityLossNearPlayersReduction = Math.Clamp(sanityLossNearPlayersReduction, 0.1f, 1f);
+            sanityLossLightsOffEvent = Math.Clamp(sanityLossLightsOffEvent, 0f, 1f);
+            sanityLossLookingAtModelHallucination = Math.Clamp(sanityLossLookingAtModelHallucination, 0f, 1f);
+            sanityLossPanicAttack = Math.Clamp(sanityLossPanicAttack, 0f, 1f);
+            sanityLossInsideFactory = Math.Clamp(sanityLossInsideFactory, 0f, 1f);
+            sanityLossDarkOutside = Math.Clamp(sanityLossDarkOutside, 0f, 1f);
+
+            sanityGainLightProximity = Math.Clamp(sanityGainLightProximity, 0f, 1f);
+            sanityGainHearingWalkies = Math.Clamp(sanityGainHearingWalkies, 0f, 1f);
+            sanityGainFlashlight = Math.Clamp(sanityGainFlashlight, 0f, 1f);
+            sanityGainInsideShip = Math.Clamp(sanityGainInsideShip, 0f, 1f);
+            sanityGainLightOutside = Math.Clamp(sanityGainLightOutside, 0f, 1f);
+
+            hallucinationRNGMultiplier = Math.Clamp(hallucinationRNGMultiplier, 0.1f, 4.0f);
+            skinwalkerWalkiesFrequency = Math.Clamp(skinwalkerWalkiesFrequency, 0.1f, 1f);
         }
     }
 }

@@ -3,8 +3,7 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<AssemblyName>InsanityRemastered</AssemblyName>
-		<Description>Fork of InsanityRemastered
-Original by BudgetAirpods</Description>
+		<Description>Fork of InsanityRemastered (Original by BudgetAirpods)</Description>
 		<Version>1.2.0</Version>
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 		<LangVersion>latest</LangVersion>
@@ -27,8 +26,14 @@ Original by BudgetAirpods</Description>
 
 	<!-- idk what i'm doing -->
 	<ItemGroup>
+		<Reference Include="AdvancedCompany">
+			<HintPath>..\PotatoePet-AdvancedCompany\AdvancedCompany.dll</HintPath>
+		</Reference>
 		<Reference Include="Assembly-CSharp" Publicize="true">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
+		</Reference>
+		<Reference Include="DissonanceVoip">
+			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\DissonanceVoip.dll</HintPath>
 		</Reference>
 		<Reference Include="Unity.Netcode.Runtime">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
@@ -39,8 +44,6 @@ Original by BudgetAirpods</Description>
 		<Reference Include="UnityEngine">
 			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
 		</Reference>
-		<Reference Include="DissonanceVoip">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\DissonanceVoip.dll</HintPath>
-		</Reference>
+		
 	</ItemGroup>
 </Project>

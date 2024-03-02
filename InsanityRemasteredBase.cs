@@ -3,6 +3,7 @@ using HarmonyLib;
 using InsanityRemastered.General;
 using InsanityRemastered.ModIntegration;
 using System;
+using System.IO;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,17 +22,19 @@ namespace InsanityRemastered
 
         internal static GameObject SanityModObject;
 
+        private static string logFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Downloads", "log.txt");
+
         private void Awake()
         {
             if (Instance == null)
             {
                 Instance = this;
             }
+            InsanityRemasteredLogger.Initialize(modGUID);
 
             SceneManager.sceneLoaded += OnSceneLoaded;
-            AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad;
+            AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad; /// why is this not working?!?!
 
-            InsanityRemasteredLogger.Initialize(modGUID);
             InsanityRemasteredConfiguration.Initialize(Config);
             InsanityRemasteredConfiguration.ValidateSettings();
             InsanityRemasteredContent.LoadContent();
@@ -41,6 +44,10 @@ namespace InsanityRemastered
 
         private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
         {
+            Log("CurrentDomain_AssemblyLoad has been called.\n" +
+                "Sender: " + (sender != null ? sender.ToString() : "null") +
+                "args: " + (args != null ? args.ToString() : "null") +
+                "Loaded Assembly: " + (args.LoadedAssembly != null ? args.LoadedAssembly.ToString() : "null"));
             ModIntegrator.BeginIntegrations(args.LoadedAssembly);
         }
 
@@ -72,6 +79,14 @@ namespace InsanityRemastered
                     SetupModManager();
                     SanityModObject.hideFlags = HideFlags.HideAndDontSave;
                 }
+            }
+        }
+        /// temporary
+        public static void Log(string message)
+        {
+            using (StreamWriter writer = new(logFilePath, true))
+            {
+                writer.WriteLine(message);
             }
         }
     }

@@ -1,6 +1,8 @@
 ﻿using BepInEx;
 using InsanityRemastered.General;
+using InsanityRemastered.Patches;
 using System.IO;
+using System.Reflection;
 using UnityEngine;
 
 namespace InsanityRemastered
@@ -98,25 +100,60 @@ namespace InsanityRemastered
         {
             string modFolder;
 
-            string resourcesFolder = "Resources";
-
             if (InsanityRemasteredConfiguration.useThunderstoreFolderPath)
                 modFolder = "Epicool-InsanityRemastered";
             else
                 modFolder = "InsanityRemastered";
 
-            string sfxPath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_sfx");
-            string ambiencePath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_stingers");
-            string fakePlayerPath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_hallucination");
-            string dronePath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_drones");
-            string lcGamePath = Path.Combine(DataFolder, modFolder, resourcesFolder, "soundresources_lc");
+            string sfxPath = Path.Combine(DataFolder, modFolder, "soundresources_sfx");
+            string ambiencePath = Path.Combine(DataFolder, modFolder, "soundresources_stingers");
+            string fakePlayerPath = Path.Combine(DataFolder, modFolder, "soundresources_hallucination");
+            string dronePath = Path.Combine(DataFolder, modFolder, "soundresources_drones");
+            string lcGamePath = Path.Combine(DataFolder, modFolder, "soundresources_lc");
+
 
             AssetBundle sfx = AssetBundle.LoadFromFile(sfxPath);
             AssetBundle ambience = AssetBundle.LoadFromFile(ambiencePath);
             AssetBundle fakePlayer = AssetBundle.LoadFromFile(fakePlayerPath);
             AssetBundle drone = AssetBundle.LoadFromFile(dronePath);
             AssetBundle lcGame = AssetBundle.LoadFromFile(lcGamePath);
-            if (sfx || ambience || fakePlayer || drone || lcGame)
+
+
+            if (InsanityRemasteredConfiguration.logDebugVariables)
+            {
+                InsanityRemasteredLogger.LogVariables([
+                    nameof(modFolder),
+                    nameof(sfxPath),
+                    nameof(ambiencePath),
+                    nameof(fakePlayerPath),
+                    nameof(dronePath),
+                    nameof(lcGamePath),
+                    nameof(sfx),
+                    nameof(ambience),
+                    nameof(fakePlayer),
+                    nameof(drone),
+                    nameof(lcGame)
+                ],
+                [
+                    modFolder,
+                    sfxPath,
+                    ambiencePath,
+                    fakePlayerPath,
+                    dronePath,
+                    lcGamePath,
+                    sfx,
+                    ambience,
+                    fakePlayer,
+                    drone,
+                    lcGame
+                ]);
+            }
+
+            if (sfx && ambience && fakePlayer && drone && lcGame)
+            {
+                InsanityRemasteredLogger.Log("Successfully loaded audio assets!");
+            }
+            else
             {
                 InsanityRemasteredLogger.LogError("Failed to load audio assets!");
                 return;

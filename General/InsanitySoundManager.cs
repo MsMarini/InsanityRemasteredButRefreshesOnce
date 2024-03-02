@@ -1,5 +1,7 @@
 ﻿using InsanityRemastered.ModIntegration;
 using UnityEngine;
+using UnityEngine.Rendering;
+using UnityEngine.UIElements.UIR;
 
 namespace InsanityRemastered.General
 {
@@ -58,8 +60,7 @@ namespace InsanityRemastered.General
             {
                 if (clip.name == "JumpScare")
                 {
-                    hallucinationSource.clip = clip;
-                    hallucinationSource.Play();
+                    hallucinationSource.PlayOneShot(hallucinationSource.clip, 0.7f);
                 }
             }
         }
@@ -107,7 +108,7 @@ namespace InsanityRemastered.General
 
         public AudioClip LoadHallucinationSound()
         {
-            if (InsanityRemasteredConfiguration.customSFXEnabled && Random.Range(0f, 1f) < 0.6f)
+            if (InsanityRemasteredConfiguration.customSFXEnabled && Random.Range(0f, 1f) < 0.8f)
             {
                 int randomClip = Random.Range(0, hallucinationSFX.Length);
                 if (hallucinationSFX[randomClip])

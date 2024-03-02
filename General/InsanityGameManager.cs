@@ -16,6 +16,7 @@ namespace InsanityRemastered.General
         public static InsanityGameManager Instance;
 
         private List<Light> bunkerLights = [];
+        private List<Animator> bunkerLightsAnimators = [];
         private float deletionTimer;
         private float deletionFrequency = 10f;
         public GameObject currentHallucinationModel;
@@ -30,10 +31,11 @@ namespace InsanityRemastered.General
         
         public bool LightsOff { get; private set; }
         public List<Light> BunkerLights => bunkerLights;
+        public List<Animator> BunkerLightsAnimators => bunkerLightsAnimators;
 
         private void Awake()
         {
-            if (Instance == null)
+            if (!Instance)
             {
                 Instance = this;
             }
@@ -62,7 +64,7 @@ namespace InsanityRemastered.General
                 }
             }
 
-            if (RoundManager.Instance.powerOffPermanently && GameNetworkManager.Instance.gameHasStarted) /// may need to update LightsOff on round start/end
+            if (GameNetworkManager.Instance.gameHasStarted && RoundManager.Instance.powerOffPermanently) /// may need to update LightsOff on round start/end
             {
                 LightsOff = true;
             }
@@ -148,9 +150,9 @@ namespace InsanityRemastered.General
 
         private bool NearLightSource(float checkRadius = 10f) /// this seems intensive, but also like the only option?
         {
-            for (int i = 0; i < RoundManager.Instance.allPoweredLights.Count; i++)
+            for (int i = 0; i < bunkerLights.Count; i++)
             {
-                float lightDistance = Vector3.Distance(RoundManager.Instance.allPoweredLights[i].transform.position, LocalPlayer.transform.position);
+                float lightDistance = Vector3.Distance(bunkerLights[i].transform.position, LocalPlayer.transform.position);
                 if (lightDistance < checkRadius && RoundManager.Instance.allPoweredLightsAnimators[i].GetBool("on"))
                 {
                     return true;
@@ -198,14 +200,25 @@ namespace InsanityRemastered.General
 
         private void CacheLights()
         {
-            BunkerLights.Clear();
+            bunkerLights.Clear();
+            bunkerLightsAnimators.Clear();
+
             foreach (Light light in RoundManager.Instance.allPoweredLights)
             {
-                if (!bunkerLights.Contains(light))
-                {
-                    bunkerLights.Add(light);
-                }
+                /// do we need this if? unless there are duplicates in the original array, then this should be sufficient
+                //if (!bunkerLights.Contains(light))
+                //{
+                bunkerLights.Add(light);
+                //}
             }
+
+            foreach (Animator lightAnimator in RoundManager.Instance.allPoweredLightsAnimators)
+            {
+                bunkerLightsAnimators.Add(lightAnimator);
+            }
+
+            if (bunkerLights.Count != bunkerLightsAnimators.Count)
+                InsanityRemasteredLogger.LogError("The lights and light animators are not equal. Please report this bug.");
         }
     }
 }
