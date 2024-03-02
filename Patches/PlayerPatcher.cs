@@ -60,7 +60,7 @@ namespace InsanityRemastered.Patches
                 }
                 else
                 {
-                    LocalPlayer.isPlayerAlone = false;
+                    LocalPlayer.isPlayerAlone = true;
                 }
 
                 // calculate sanity gain/loss

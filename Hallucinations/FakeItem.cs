@@ -27,7 +27,7 @@ namespace InsanityRemastered.Hallucinations
             }
             if (action < 0.4f)
             {
-                GameNetworkManager.Instance.localPlayerController.DamagePlayer(Random.Range(1, 8), false);  /// inflict damage, if it doesn't already
+                GameNetworkManager.Instance.localPlayerController.DamagePlayer(Random.Range(1, 8), false);  /// inflict damage could be its own event
                 PlayerPatcher.LocalPlayer.DropBlood();
             }
             else if (action < 0.001f)

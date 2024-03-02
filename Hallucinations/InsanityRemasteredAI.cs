@@ -163,7 +163,7 @@ namespace InsanityRemastered.Hallucinations
                 {
                     LookAtHallucinationFirstTime();
                 }
-                /// LookingAtHallucination(); /// currently unimplemented
+                /// LookingAtHallucination(); unimplemented method
                 PlayerPatcher.lookingAtModelHallucination = true;
             }
             else

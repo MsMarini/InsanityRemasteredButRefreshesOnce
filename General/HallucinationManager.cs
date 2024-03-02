@@ -52,7 +52,6 @@ namespace InsanityRemastered.General
             get => panicAttackLevel;
             set => panicAttackLevel = value;
         }
-        public float EffectTransition => slowdownTimer;
         public Dictionary<string, InsanityLevel> Hallucinations => hallucinations;
         // actions
         public static event Action<bool> OnPowerHallucination;
@@ -181,17 +180,17 @@ namespace InsanityRemastered.General
                 panicAttackLevel = Mathf.MoveTowards(panicAttackLevel, 0f, 0.5f * Time.deltaTime);
                 if (InsanityRemasteredConfiguration.panicAttackFXEnabled)
                 {
-                    HUDManager.Instance.insanityScreenFilter.weight = Mathf.MoveTowards(HUDManager.Instance.insanityScreenFilter.weight, 0f, slowdownTimer - 100f * Time.deltaTime);
-                    SoundManager.Instance.SetDiageticMixerSnapshot(0, slowdownTimer / 6f);
+                    HUDManager.Instance.insanityScreenFilter.weight = Mathf.MoveTowards(HUDManager.Instance.insanityScreenFilter.weight, 0f, 16f * Time.deltaTime);
+                    SoundManager.Instance.SetDiageticMixerSnapshot(0, 16f);
                 }
             }
             else if (PlayerPatcher.CurrentInsanityLevel >= InsanityLevel.High && !InsanityGameManager.Instance.IsNearLightSource)
             {
-                panicAttackLevel = Mathf.MoveTowards(panicAttackLevel, 1f, slowdownTimer * Time.deltaTime);
+                panicAttackLevel = Mathf.MoveTowards(panicAttackLevel, 1f, Time.deltaTime);
                 if (InsanityRemasteredConfiguration.panicAttackFXEnabled)
                 {
-                    HUDManager.Instance.insanityScreenFilter.weight = Mathf.MoveTowards(HUDManager.Instance.insanityScreenFilter.weight, 0.5f, slowdownTimer * Time.deltaTime);
-                    SoundManager.Instance.SetDiageticMixerSnapshot(1, slowdownTimer);
+                    HUDManager.Instance.insanityScreenFilter.weight = Mathf.MoveTowards(HUDManager.Instance.insanityScreenFilter.weight, 0.5f, 8f * Time.deltaTime);
+                    SoundManager.Instance.SetDiageticMixerSnapshot(1, 8f);
                 }
             }
 
@@ -274,15 +273,9 @@ namespace InsanityRemastered.General
                     InsanityRemasteredLogger.LogWarning("No such hallucination with ID: " + id);
                     break;
             }
-            /* i disabled this because i dont want the recursive call
-            if (hallucinations[id] >= InsanityLevel.Medium && UnityEngine.Random.Range(0f, 1f) < 0.1f)
-            {
-                Hallucinate(GetRandomHallucination(id));
-            }
-            */
         }
 
-        public string GetRandomHallucination() /// make it so that disabled hallucinations are not included
+        public string GetRandomHallucination()
         {
             KeyValuePair<string, InsanityLevel> randomHallucination;
 

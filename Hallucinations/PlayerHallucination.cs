@@ -209,7 +209,7 @@ namespace InsanityRemastered.Hallucinations
                 float scareRNG = Random.Range(0f, 1f);
                 if (scareRNG < 0.2f)
                 {
-                    LocalPlayer.DamagePlayer(Random.Range(2, 16), false, causeOfDeath: CauseOfDeath.Suffocation); /// can this actually kill?
+                    LocalPlayer.DamagePlayer(Random.Range(2, 16), false, causeOfDeath: CauseOfDeath.Suffocation);
                     PlayerPatcher.LocalPlayer.DropBlood();
                     return;
                 }

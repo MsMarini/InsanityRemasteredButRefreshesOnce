@@ -205,11 +205,7 @@ namespace InsanityRemastered.General
 
             foreach (Light light in RoundManager.Instance.allPoweredLights)
             {
-                /// do we need this if? unless there are duplicates in the original array, then this should be sufficient
-                //if (!bunkerLights.Contains(light))
-                //{
                 bunkerLights.Add(light);
-                //}
             }
 
             foreach (Animator lightAnimator in RoundManager.Instance.allPoweredLightsAnimators)

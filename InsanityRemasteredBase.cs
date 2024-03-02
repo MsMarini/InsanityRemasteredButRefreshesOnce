@@ -30,11 +30,11 @@ namespace InsanityRemastered
             {
                 Instance = this;
             }
-            InsanityRemasteredLogger.Initialize(modGUID);
 
             SceneManager.sceneLoaded += OnSceneLoaded;
             AppDomain.CurrentDomain.AssemblyLoad += CurrentDomain_AssemblyLoad; /// why is this not working?!?!
 
+            InsanityRemasteredLogger.Initialize(modGUID);
             InsanityRemasteredConfiguration.Initialize(Config);
             InsanityRemasteredConfiguration.ValidateSettings();
             InsanityRemasteredContent.LoadContent();
@@ -44,10 +44,10 @@ namespace InsanityRemastered
 
         private void CurrentDomain_AssemblyLoad(object sender, AssemblyLoadEventArgs args)
         {
-            Log("CurrentDomain_AssemblyLoad has been called.\n" +
+        /*Log("CurrentDomain_AssemblyLoad has been called.\n" +
                 "Sender: " + (sender != null ? sender.ToString() : "null") +
                 "args: " + (args != null ? args.ToString() : "null") +
-                "Loaded Assembly: " + (args.LoadedAssembly != null ? args.LoadedAssembly.ToString() : "null"));
+                "Loaded Assembly: " + (args.LoadedAssembly != null ? args.LoadedAssembly.ToString() : "null"));*/
             ModIntegrator.BeginIntegrations(args.LoadedAssembly);
         }
 

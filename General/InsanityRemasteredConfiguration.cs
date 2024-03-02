@@ -72,7 +72,7 @@ namespace InsanityRemastered.General
 
         public static void Initialize(ConfigFile Config)
         {
-            SFXVolume = Config.Bind("Volume", "Stinger/drone volume", 0.5f, "Sets the volume of the stinger and drone sounds.\nValue Constraints: 0.0 - 1.0").Value; /// this may not be correctly applied
+            SFXVolume = Config.Bind("Volume", "Stinger/drone volume", 0.5f, "Sets the volume of the stinger and drone sounds.\nValue Constraints: 0.0 - 1.0").Value;
 
             panicAttacksEnabled = Config.Bind("General", "Enable panic attacks", true, "Enables panic attacks.").Value;
             panicAttackDeathsEnabled = Config.Bind("General", "Enable deaths from panic attacks", false, "Enables the possibility to die when having a panic attack.").Value;
