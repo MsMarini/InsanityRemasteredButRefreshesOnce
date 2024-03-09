@@ -84,14 +84,11 @@ namespace InsanityRemastered.Patches
 
                 if (LocalPlayer.insanitySpeedMultiplier > 0f)
                 {
-                    if (InsanityGameManager.Instance.IsNearLightSource)
-                        LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainLightProximity;
+                    if (InsanityGameManager.Instance.IsNearLightSource || FlashlightOn || AdvancedCompanyCompatibility.nightVision)
+                        LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainLight;
 
                     if (InsanityGameManager.Instance.IsHearingPlayersThroughWalkie && LocalPlayer.isPlayerAlone)
                         LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainHearingWalkies;
-
-                    if (FlashlightOn || AdvancedCompanyCompatibility.nightVision)
-                        LocalPlayer.insanitySpeedMultiplier -= InsanityRemasteredConfiguration.sanityGainFlashlight;
                 }
 
                 if (InsanityGameManager.Instance.LightsOff)
@@ -100,7 +97,7 @@ namespace InsanityRemastered.Patches
                 if (lookingAtModelHallucination)
                     LocalPlayer.insanitySpeedMultiplier += InsanityRemasteredConfiguration.sanityLossLookingAtModelHallucination;
 
-                if (HallucinationManager.Instance.PanicAttackLevel > 0.5f)
+                if (CurrentInsanityLevel == InsanityLevel.Max)
                     LocalPlayer.insanitySpeedMultiplier += InsanityRemasteredConfiguration.sanityLossPanicAttack;
 
                 // final calculation
@@ -119,11 +116,9 @@ namespace InsanityRemastered.Patches
                 else // insanity is being gained
                 {
                     if (PlayersConnected == 1)
-                        LocalPlayer.insanitySpeedMultiplier *= InsanityRemasteredConfiguration.insanitySoloScaling;
-                    else if (LocalPlayer.isPlayerAlone)
-                        LocalPlayer.insanitySpeedMultiplier *= Mathf.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125f);
+                        LocalPlayer.insanitySpeedMultiplier *= InsanityRemasteredConfiguration.sanityLossSoloReduction;
                     else
-                        LocalPlayer.insanitySpeedMultiplier *= Mathf.Pow(InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling, 0.125f) * InsanityRemasteredConfiguration.sanityLossNearPlayersReduction;
+                        LocalPlayer.insanitySpeedMultiplier *= InsanityRemasteredConfiguration.sanityLossNearPlayersReduction;
 
                     LocalPlayer.insanityLevel = Mathf.MoveTowards(LocalPlayer.insanityLevel, LocalPlayer.maxInsanityLevel, Time.deltaTime * LocalPlayer.insanitySpeedMultiplier);
                     return false;
@@ -137,7 +132,7 @@ namespace InsanityRemastered.Patches
         private static void _Update()
         {
             PlayersConnected = StartOfRound.Instance.connectedPlayersAmount + 1;
-            PlayersConnected = Math.Clamp(PlayersConnected, 1, InsanityRemasteredConfiguration.insanityMaxPlayerAmountScaling);
+            PlayersConnected = Math.Clamp(PlayersConnected, 1, 4);
             
             if (GameNetworkManager.Instance.gameHasStarted && LocalPlayer.isPlayerControlled && !LocalPlayer.isPlayerDead)
             {
@@ -171,6 +166,7 @@ namespace InsanityRemastered.Patches
             {
                 LocalPlayer.movementSpeed = Mathf.MoveTowards(LocalPlayer.movementSpeed, 4.6f, 5f * Time.deltaTime);
             }
+
             if (HallucinationManager.reduceVision)
             {
                 HUDManager.Instance.increaseHelmetCondensation = true;

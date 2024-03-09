@@ -1,35 +1,40 @@
 # Insanity Remastered
-### (Original by BudgetAirpods)
+## (Original by BudgetAirpods)
+### Most credit goes to him, I wouldn't know what to do from scratch. Upstream GitHub: https://github.com/BudgetAirpods/InsanityRemastered/tree/main
 
-## This may be my one and only update; I just wanted to fix the audio assets not loading, but I ended up doing a bit more.
+## I do not plan on maintaining this mod.
+### If anyone wants to take over, feel free to make your own fork or make pull requests at the respository.
 
 A mod for Lethal Company that adds more features to the insanity mechanic and tweaks a few things related to it.
 
-This is a client-sided mod as it would be odd if other players could see your hallucinations.
-
 Manual Installation:
-Drag InsanityRemastered.dll and the folder named "InsanityRemastered" into the BepInEx plugins folder.
+Drag the folder named "Epicool-InsanityRemastered" into the BepInEx plugins folder.
 
+
+## Sanity Calculations:
+   - Based on your current location, you will either gain or lose sanity. Various factors will futher adjust how much sanity you gain or lose.
+   - There are two presets for the config values. The recommended, "Slow", aims to have sanity difficult to recover and gradually build up throughout the day. "Fast" will cause sanity to be gained and lost quickly.
 
 ### Losing Sanity:
-   - Changed the amount of insanity gained when alone inside the facility.
-   - During the Light Shutoff hallucination, you will lose a bit more sanity than normal.
-   - Panic attacks will cause great sanity loss.
+   - Being in the factory or nighttime outside
+   - Being around other players will drastically reduce your sanity loss
+   - Being in the dark
+   - Experiencing hallucinations (avoid the fake player hallucination!)
 
 ### Gaining Sanity:
-   - Being near an active light source or using flashlights will regenerate sanity.
-   - Being around players will drastically reduce your sanity loss.
-   - Consuming pills will reset your sanity level entirely.
+   - Being on the ship or daytime outside
+   - Being near a light or having an active flashlight
+   - Consuming pills will reset your sanity level entirely
 
 ## Insanity Scaling:
-   - Sanity loss will scale with how many players are in your lobby.
+   - There are presets that adjust how much sanity is gained and lost. "Slow" is the recommended preset!
    - Solo players can change a multiplier that affects their sanity loss as well.
      
 **There are now three levels of insanity. High, Medium, and Low.**
    - As your insanity level progresses, you will experience more intense hallucinations.
-   - Hallucinations can also happen in success with each other when your insanity is high enough, leading to potentially chaotic results.
+   - Hallucinations are more frequent the more insane you are.
 
-### Insanity notifier:
+### Insanity notifiers:
 While exploring the facility, your suit will occasionally let you know if your insanity level is increasing beyond what is deemed safe.
 
 ## Hallucinations
@@ -66,7 +71,7 @@ During one, some hallucinations become lethal and you experience one of the foll
 - Impaired Vision
 - Death
 
-You can recover from panic attacks by stepping outside the facility or being around light.
+You can recover from panic attacks by stepping outside the facility, being around light, or being next to a friend!
 
 ## Configuration:
 
@@ -80,7 +85,7 @@ Bug reports and compatibility issues should be reported in the Issues section.
 
 ## Known Issues:
 
--The Lights Off feature may cause the lights to turn on again after you take the apparatus. Intraday issues should be resolved, but it may not be consistent across days.
+-The Lights Off hallucination may cause bugs between days.
 
 -The Skinwalkers mod is not supported in my fork. I left the code, but it is disabled by default and will not be maintained as of now. I prefer Mirage anyway, but I don't know how to do most of the compatibility code.
 
@@ -93,12 +98,6 @@ Bug reports and compatibility issues should be reported in the Issues section.
 -This was made from decompiled code and by a newbie programmer.
 
 
-### features to implement?:
-proximity/chased/looking at monsters increases insanity
-
-damage from hallucinations scale with insanity
-
-FlashlightOn method may be improved? (different method of detection)
-
-bug list:
-Turned off breaker -> took apparatus -> Lights Off hallucination -> left facility -> reentered facility -> lights were on!
+### Features to implement:
+-Being chased by monsters increases insanity
+-Damage from hallucinations scale with insanity

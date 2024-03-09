@@ -1,7 +1,7 @@
 {
   "name": "InsanityRemastered",
-  "author_name": "Epicool",
-  "version_number": "1.2.0",
+  "author": "Epicool",
+  "version_number": "1.2.1",
   "website_url": "https://github.com/Toimis/InsanityRemastered",
   "description": "Adds new features and mechanics to the insanity mechanic of Lethal Company. Fork of original by BudgetAirpods.",
   "dependencies": [

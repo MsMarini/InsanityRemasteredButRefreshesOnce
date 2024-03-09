@@ -206,23 +206,24 @@ namespace InsanityRemastered.Hallucinations
         {
             if (touched)
             {
-                float scareRNG = Random.Range(0f, 1f);
-                if (scareRNG < 0.2f)
+                float badRNG = Random.Range(0f, 1f);
+                if (badRNG < 0.3f)
                 {
                     LocalPlayer.DamagePlayer(Random.Range(2, 16), false, causeOfDeath: CauseOfDeath.Suffocation);
                     PlayerPatcher.LocalPlayer.DropBlood();
+                    base.FinishHallucination(touched);
                     return;
                 }
-                else if (scareRNG < 0.5f)
+                else if (badRNG < 0.6f)
                 {
                     HallucinationManager.Instance.PanicAttackSymptom(true);
                 }
 
-                base.FinishHallucination(true);
+                base.FinishHallucination(touched);
             }
             else
             {
-                base.FinishHallucination(false);
+                base.FinishHallucination(touched);
             }
         }
 

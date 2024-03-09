@@ -44,7 +44,7 @@ namespace InsanityRemastered.Patches
                 ToggleHUD();
             }
 
-            if (!wasWarned)
+            if (InsanityRemasteredConfiguration.sanityRemindersEnabled && !wasWarned)
             {
                 if (PlayerPatcher.CurrentInsanityLevel >= InsanityLevel.High)
                 {

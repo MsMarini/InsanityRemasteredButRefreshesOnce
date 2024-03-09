@@ -75,7 +75,7 @@ namespace InsanityRemastered.Hallucinations
         public virtual void LookAtHallucinationFirstTime()
         {
             notSeenYet = false;
-            LocalPlayer.JumpToFearLevel(0.4f);
+            LocalPlayer.JumpToFearLevel(0.5f);
         }
 
         public virtual void FinishHallucination(bool touched)
