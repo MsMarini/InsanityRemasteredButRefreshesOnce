@@ -24,22 +24,22 @@
 		<PackageReference Include="Microsoft.NETFramework.ReferenceAssemblies" Version="1.0.2" PrivateAssets="all" />
 	</ItemGroup>
 
-	<!-- idk what i'm doing -->
+	<!-- References the dll files needed to build the plugin dll-->
 	<ItemGroup>
 		<Reference Include="Assembly-CSharp" Publicize="true">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
+			<HintPath>F:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Assembly-CSharp.dll</HintPath>
 		</Reference>
 		<Reference Include="DissonanceVoip">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\DissonanceVoip.dll</HintPath>
+			<HintPath>F:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\DissonanceVoip.dll</HintPath>
 		</Reference>
 		<Reference Include="Unity.Netcode.Runtime">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
+			<HintPath>F:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.Netcode.Runtime.dll</HintPath>
 		</Reference>
 		<Reference Include="Unity.RenderPipelines.Core.Runtime">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+			<HintPath>F:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
 		</Reference>
 		<Reference Include="UnityEngine">
-			<HintPath>C:\Program Files (x86)\Steam\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
+			<HintPath>F:\SteamLibrary\steamapps\common\Lethal Company\Lethal Company_Data\Managed\UnityEngine.dll</HintPath>
 		</Reference>
 		
 	</ItemGroup>

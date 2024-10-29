@@ -7,8 +7,11 @@ namespace InsanityRemastered.ModIntegration
 {
     public class ModIntegrator
     {
+        private static bool skinwalkerIntegrationPerformed = false;
         public static void BeginIntegrations(Assembly assembly)
         {
+            if(skinwalkerIntegrationPerformed) return;
+
             if (InsanityRemasteredConfiguration.useExperimentalSkinwalkerVersion)
             {
                 SkinwalkerModIntegration.IsInstalled = true;
@@ -43,6 +46,7 @@ namespace InsanityRemastered.ModIntegration
                     }
                 }
             }
+            skinwalkerIntegrationPerformed = true;
             
             if (assembly.FullName.StartsWith("AdvancedCompany"))
             {
